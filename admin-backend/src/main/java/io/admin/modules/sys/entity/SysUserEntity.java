@@ -32,11 +32,17 @@ public class SysUserEntity implements Serializable {
 	@NotEmpty(message="用户名不能为空", groups = {AddGroup.class, UpdateGroup.class})
 	private String username;
 
+	@NotEmpty(message="姓名不能为空",groups = {AddGroup.class, UpdateGroup.class})
+	private String usercname;
+
 	/**
 	 * 密码
 	 */
 	@NotNull(message="密码不能为空", groups = AddGroup.class)
 	private String password;
+
+	@NotEmpty(message="单位不能为空", groups = {AddGroup.class, UpdateGroup.class})
+	private String unit;
 
 	/**
 	 * 盐
@@ -107,6 +113,7 @@ public class SysUserEntity implements Serializable {
 	public String getUsername() {
 		return username;
 	}
+
 	
 	/**
 	 * 设置：密码
@@ -210,5 +217,22 @@ public class SysUserEntity implements Serializable {
 
 	public void setSalt(String salt) {
 		this.salt = salt;
+	}
+
+
+	public String getUsercname() {
+		return usercname;
+	}
+
+	public void setUsercname(String usercname) {
+		this.usercname = usercname;
+	}
+
+	public String getUnit() {
+		return unit;
+	}
+
+	public void setUnit(String unit) {
+		this.unit = unit;
 	}
 }

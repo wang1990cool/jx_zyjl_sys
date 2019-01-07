@@ -140,10 +140,10 @@
           })
         }).then(({data}) => {
           if (data && data.code === 0) {
-            this.dataList = data.page.list
-            this.totalPage = data.page.totalCount
+            this.dataList = data.page.list;
+            this.totalPage = data.page.totalCount;
           } else {
-            this.dataList = []
+            this.dataList = [];
             this.totalPage = 0
           }
           this.dataListLoading = false
@@ -156,13 +156,13 @@
       },
       // 每页数
       sizeChangeHandle (val) {
-        this.pageSize = val
-        this.pageIndex = 1
+        this.pageSize = val;
+        this.pageIndex = 1;
         this.getDataList()
       },
       // 当前页
       currentChangeHandle (val) {
-        this.pageIndex = val
+        this.pageIndex = val;
         this.getDataList()
       },
       // 多选
@@ -171,7 +171,7 @@
       },
       // 排序
       sortChangeHandle (val){
-        this.setOrder(val)
+        this.setOrder(val);
         this.getDataList();
       },
       // 设置排序条件

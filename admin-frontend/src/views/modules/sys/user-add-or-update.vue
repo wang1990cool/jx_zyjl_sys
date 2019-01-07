@@ -7,11 +7,17 @@
       <el-form-item label="用户名" prop="userName">
         <el-input v-model="dataForm.userName" placeholder="登录帐号"></el-input>
       </el-form-item>
+      <el-form-item label="姓名" prop="userCName">
+        <el-input v-model="dataForm.userCName" placeholder="姓名"></el-input>
+      </el-form-item>
+      <el-form-item label="单位" prop="unit">
+        <el-input v-model="dataForm.unit" placeholder="单位"></el-input>
+      </el-form-item>
       <el-form-item label="密码" prop="password" :class="{ 'is-required': !dataForm.id }">
         <el-input v-model="dataForm.password" type="password" placeholder="密码"></el-input>
       </el-form-item>
       <el-form-item label="确认密码" prop="comfirmPassword" :class="{ 'is-required': !dataForm.id }">
-        <el-input v-model="dataForm.comfirmPassword" type="password" placeholder="确认密码"></el-input>
+        <el-input v-model="dataForm.confirmPassword" type="password" placeholder="确认密码"></el-input>
       </el-form-item>
       <el-form-item label="邮箱" prop="email">
         <el-input v-model="dataForm.email" placeholder="邮箱"></el-input>
@@ -49,7 +55,7 @@
           callback()
         }
       }
-      var validateComfirmPassword = (rule, value, callback) => {
+      var validateConfirmPassword = (rule, value, callback) => {
         if (!this.dataForm.id && !/\S/.test(value)) {
           callback(new Error('确认密码不能为空'))
         } else if (this.dataForm.password !== value) {
@@ -78,8 +84,10 @@
         dataForm: {
           id: 0,
           userName: '',
+          userCName:'',
+          unit:'',
           password: '',
-          comfirmPassword: '',
+          confirmPassword: '',
           salt: '',
           email: '',
           mobile: '',
@@ -90,11 +98,17 @@
           userName: [
             { required: true, message: '用户名不能为空', trigger: 'blur' }
           ],
+          userCName: [
+            { required: true, message: '姓名不能为空', trigger: 'blur' }
+          ],
+          unit: [
+            { required: true, message: '单位不能为空', trigger: 'blur' }
+          ],
           password: [
             { validator: validatePassword, trigger: 'blur' }
           ],
-          comfirmPassword: [
-            { validator: validateComfirmPassword, trigger: 'blur' }
+          confirmPassword: [
+            { validator: validateConfirmPassword, trigger: 'blur' }
           ],
           email: [
             { required: true, message: '邮箱不能为空', trigger: 'blur' },
@@ -130,6 +144,8 @@
             }).then(({data}) => {
               if (data && data.code === 0) {
                 this.dataForm.userName = data.user.username
+                this.dataForm.userCName = data.user.usercname
+                this.dataForm.unit = data.user.unit;
                 this.dataForm.salt = data.user.salt
                 this.dataForm.email = data.user.email
                 this.dataForm.mobile = data.user.mobile
@@ -150,6 +166,8 @@
               data: this.$http.adornData({
                 'userId': this.dataForm.id || undefined,
                 'username': this.dataForm.userName,
+                'usercname':this.dataForm.userCName,
+                'unit':this.dataForm.unit,
                 'password': this.dataForm.password,
                 'salt': this.dataForm.salt,
                 'email': this.dataForm.email,
