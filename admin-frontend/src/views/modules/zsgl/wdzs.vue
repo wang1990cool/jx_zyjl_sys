@@ -83,6 +83,13 @@
         </template>
       </el-table-column>
       <el-table-column
+        v-if="false"
+        prop="ztm"
+        header-align="center"
+        align="center"
+        label="状态码">
+      </el-table-column>
+      <el-table-column
         prop="zt"
         header-align="center"
         align="center"
@@ -101,7 +108,8 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button v-if="isAuth('zsgl:wdzs:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
+          <el-button  v-if="isAuth('zsgl:wdzs:info')" type="text" size="small" @click="detailHandle(scope.row.id)">查看 </el-button>
+          <el-button v-if="isAuth('zsgl:wdzs:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.id,scope,row,ztm)">修改</el-button>
           <el-button v-if="isAuth('zsgl:wdzs:delete')" type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
@@ -118,11 +126,13 @@
     </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+    <detail v-if="detailVisible" ref="detail" @refreshDataList="getDataList"></detail>
   </div>
 
 </template>
 <script>
   import AddOrUpdate from './wdzs-add-or-update'
+  import Detail from './wdzs-detail.vue'
   export default {
     data () {
       return {
@@ -135,11 +145,14 @@
         totalPage: 0,
         dataListLoading: false,
         dataListSelections: [],
-        addOrUpdateVisible: false
+        addOrUpdateVisible: false,
+        detailVisible: false
+
       }
     },
     components: {
-      AddOrUpdate
+      AddOrUpdate,
+      Detail
     },
     activated () {
       this.getDataList()
@@ -183,12 +196,29 @@
       selectionChangeHandle (val) {
         this.dataListSelections = val
       },
+      //查看
+      detailHandle (id) {
+          this.detailVisible = true
+          this.$nextTick(() => {
+            this.$refs.detail.init(id)
+          })
+      },
       // 新增 / 修改
-      addOrUpdateHandle (id) {
-        this.addOrUpdateVisible = true
-        this.$nextTick(() => {
-          this.$refs.addOrUpdate.init(id)
-        })
+      addOrUpdateHandle (id, ztm) {
+        if(ztm<=1) {
+          this.addOrUpdateVisible = true
+          this.$nextTick(() => {
+            this.$refs.addOrUpdate.init(id)
+          })
+        }else{
+          this.$message({
+            message: '该状态不可修改'
+/*
+            type: 'success',
+            duration: 1500
+*/
+          })
+        }
       },
       // 删除
       deleteHandle (id) {
