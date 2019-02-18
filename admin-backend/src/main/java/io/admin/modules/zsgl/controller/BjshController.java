@@ -36,8 +36,8 @@ public class BjshController {
     @RequestMapping("/list")
     @RequiresPermissions("zsgl:bjsh:list")
     public R list(@RequestParam Map<String, Object> params){
-//        params.put("xsxh",getUserEntity().getUsername());
-        params.put("bjmc",getUserEntity().getMobile());
+        params.put("bjmc",getUserEntity().getUnit());
+        params.put("ztm",2);
         PageUtils page = xsZsxxbService.queryPage(params);
 
         return R.ok().put("page", page);
@@ -65,7 +65,7 @@ public class BjshController {
             XsZsxxbEntity zsxx=xsZsxxbService.selectById(xsZsxxb.getId());
             zsxx.setBjshyj(xsZsxxb.getBjshyj());
             zsxx.setZtm(xsZsxxb.getZtm());
-            if(xsZsxxb.getZtm()==2){
+            if(xsZsxxb.getZtm()==4){
                 zsxx.setZt("待实训中心审核");
 
             } else{

@@ -70,7 +70,9 @@ public class WdzsController {
     public R save(@RequestBody XsZsxxbEntity xsZsxxb) throws IOException{
             xsZsxxb.setXsxm(getUserEntity().getUsercname());
             xsZsxxb.setXsxh(getUserEntity().getUsername());
+            xsZsxxb.setSzbj(getUserEntity().getUnit());
             xsZsxxb.setZt("待班级审核");
+            xsZsxxb.setZtm(2);
             FileInputStream fis = new FileInputStream(xsZsxxb.getZppath());
             byte[] buffer=new byte[fis.available()];
             fis.read(buffer);

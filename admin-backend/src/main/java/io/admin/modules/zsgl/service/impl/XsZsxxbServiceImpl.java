@@ -21,11 +21,14 @@ public class XsZsxxbServiceImpl extends ServiceImpl<XsZsxxbDao, XsZsxxbEntity> i
     public PageUtils queryPage(Map<String, Object> params) {
         String username = (String)params.get("xsxh");
         String bjmc=(String)params.get("bjmc");
+        Integer ztm=(Integer)params.get("ztm");
         Page<XsZsxxbEntity> page = this.selectPage(
                 new Query<XsZsxxbEntity>(params).getPage(),
                 new EntityWrapper<XsZsxxbEntity>().
                 like(StringUtils.isNotBlank(username), "xsxh", username).
-                like(StringUtils.isNotBlank(bjmc), "szbj", bjmc)
+                like(StringUtils.isNotBlank(bjmc), "szbj", bjmc).
+                eq(  ztm != null && ztm != 0 ,"ztm",ztm)
+
         );
 
         return new PageUtils(page);
