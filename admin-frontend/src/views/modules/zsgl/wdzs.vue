@@ -2,7 +2,7 @@
   <div class="mod-config">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
-        <el-button v-if="isAuth('zsgl:wdzs:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('zsgl:wdzs:save')" type="primary" @click="addOrUpdateHandle(0,0)">新增</el-button>
         <el-button v-if="isAuth('zsgl:wdzs:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
@@ -30,7 +30,6 @@
         width="50"
         label="序号">
       </el-table-column>
-
       <el-table-column
         prop="xsxh"
         header-align="center"
@@ -73,13 +72,7 @@
                        width="80"
                        label="证书照片">
         <template slot-scope="scope">
-          <el-button
-            type="text"
-            size="small"
-
-          >
-            查看证书
-          </el-button>
+          <el-button  v-if="isAuth('zsgl:wdzs:info')" type="text" size="small" @click="zszpHandle(scope.row.id)">查看证书 </el-button>
         </template>
       </el-table-column>
       <el-table-column
@@ -127,12 +120,13 @@
     <!-- 弹窗, 新增 / 修改 -->
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
     <detail v-if="detailVisible" ref="detail" @refreshDataList="getDataList"></detail>
+    <zszp v-if="zszpVisible" ref="zszp" @refreshDataList="getDataList"></zszp>
   </div>
-
 </template>
 <script>
   import AddOrUpdate from './wdzs-add-or-update'
   import Detail from './wdzs-detail.vue'
+  import Zszp from './wdzs-zszp.vue'
   export default {
     data () {
       return {
@@ -146,13 +140,14 @@
         dataListLoading: false,
         dataListSelections: [],
         addOrUpdateVisible: false,
-        detailVisible: false
-
+        detailVisible: false,
+        zszpVisible: false
       }
     },
     components: {
       AddOrUpdate,
-      Detail
+      Detail,
+      Zszp
     },
     activated () {
       this.getDataList()
@@ -195,6 +190,13 @@
       // 多选
       selectionChangeHandle (val) {
         this.dataListSelections = val
+      },
+      //查看照片
+      zszpHandle (id) {
+        this.zszpVisible = true
+        this.$nextTick(() => {
+          this.$refs.zszp.init(id)
+        })
       },
       //查看
       detailHandle (id) {

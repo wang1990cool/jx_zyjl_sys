@@ -77,12 +77,7 @@
                        width="80"
                        label="证书照片">
         <template slot-scope="scope">
-          <el-button
-            type="text"
-            size="small"
-          >
-            查看证书
-          </el-button>
+          <el-button  v-if="isAuth('zsgl:wdzs:info')" type="text" size="small" @click="zszpHandle(scope.row.id)">查看证书 </el-button>
         </template>
       </el-table-column>
       <el-table-column
@@ -123,11 +118,12 @@
     </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+    <zszp v-if="zszpVisible" ref="zszp" @refreshDataList="getDataList"></zszp>
   </div>
-
 </template>
 <script>
   import AddOrUpdate from './bjsh-add-or-update'
+  import Zszp from './wdzs-zszp.vue'
   export default {
     data () {
       return {
@@ -140,11 +136,13 @@
         totalPage: 0,
         dataListLoading: false,
         dataListSelections: [],
-        addOrUpdateVisible: false
+        addOrUpdateVisible: false,
+        zszpVisible: false
       }
     },
     components: {
-      AddOrUpdate
+      AddOrUpdate,
+      Zszp
     },
     activated () {
       this.getDataList()
@@ -185,6 +183,13 @@
       // 多选
       selectionChangeHandle (val) {
         this.dataListSelections = val
+      },
+      //查看照片
+      zszpHandle (id) {
+        this.zszpVisible = true
+        this.$nextTick(() => {
+          this.$refs.zszp.init(id)
+        })
       },
       // 新增 / 修改
       addOrUpdateHandle (id) {

@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    :title="!dataForm.id ? '新增' : '修改'"
+    :title="'审核'"
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
@@ -12,6 +12,7 @@
       <el-input v-model="dataForm.telephone" placeholder="电话"></el-input>
     </el-form-item>
 -->
+
     <el-form-item label="证书名称" prop="zsmc">
       <el-input v-model="dataForm.zsmc" placeholder="证书名称" disabled="true"></el-input>
     </el-form-item>
@@ -65,7 +66,7 @@
       </el-upload>
     </el-form-item>
       <el-form-item label="审核意见" prop="shbm">
-        <el-radio v-model="dataForm.shbm" label="2">通过</el-radio>
+        <el-radio v-model="dataForm.shbm" label="4">通过</el-radio>
         <el-radio v-model="dataForm.shbm" label="3">驳回</el-radio>
       </el-form-item>
       <el-form-item label="反馈意见" prop="bjshyj">
@@ -117,7 +118,7 @@
           sfzh: '',
           telephone: '',
           zsmc: '',
-          shbm:'2',
+          shbm:'4',
           bjshyj:'',
           hzrq: '',
           zszp: '',
