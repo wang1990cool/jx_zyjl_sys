@@ -27,7 +27,8 @@ public class XsZsxxbServiceImpl extends ServiceImpl<XsZsxxbDao, XsZsxxbEntity> i
                 new EntityWrapper<XsZsxxbEntity>().
                 like(StringUtils.isNotBlank(username), "xsxh", username).
                 like(StringUtils.isNotBlank(bjmc), "szbj", bjmc).
-                eq(  ztm != null && ztm != 0 ,"ztm",ztm)
+                eq(  ztm != null && ztm != 0 ,"ztm",ztm).
+                orderBy("createTime",false)
 
         );
 

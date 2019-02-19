@@ -52,13 +52,13 @@
         align="center"
         label="所在班级">
       </el-table-column>
-      <el-table-column
+      <el-table-column v-if="false"
         prop="sfzh"
         header-align="center"
         align="center"
         label="身份证号">
       </el-table-column>
-      <el-table-column
+      <el-table-column v-if="false"
         prop="telephone"
         header-align="center"
         align="center"
