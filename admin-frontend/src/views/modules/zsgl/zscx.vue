@@ -4,8 +4,9 @@
       <el-form-item>
 <!--
         <el-input v-model="dataForm.xsxm" placeholder="姓名" clearable></el-input>
--->
         <el-input v-model="dataForm.xsxh" placeholder="学号" clearable></el-input>
+-->
+        <el-input v-model="dataForm.szbj" placeholder="所在班级" clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
@@ -143,7 +144,7 @@
     data () {
       return {
         dataForm: {
-          xsxh: ''
+          szbj: ''
         },
         dataList: [],
         pageIndex: 1,
@@ -163,15 +164,13 @@
     methods: {
         //导出数据
       exportDataList () {
-//          window.location.href="http://localhost:8001/zsgl/zscx/export/"
-//        window.open("/zsgl/zscx/export")
 //        this.dataListLoading = true
         this.$http({
           url: this.$http.adornUrl('/zsgl/zscx/export'),
           method: 'post',
           responseType:'arraybuffer',
           params: this.$http.adornParams({
-            'xsxh': this.dataForm.xsxh
+            'szbj': this.dataForm.szbj
           })
         }).then(({data}) => {
           if (data) {
@@ -199,7 +198,7 @@
           params: this.$http.adornParams({
             'page': this.pageIndex,
             'limit': this.pageSize,
-            'xsxh': this.dataForm.xsxh
+            'szbj': this.dataForm.szbj
           })
         }).then(({data}) => {
           if (data && data.code === 0) {

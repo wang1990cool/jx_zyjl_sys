@@ -20,13 +20,13 @@ public class XsZsxxbServiceImpl extends ServiceImpl<XsZsxxbDao, XsZsxxbEntity> i
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         String username = (String)params.get("xsxh");
-        String bjmc=(String)params.get("bjmc");
+        String szbj=(String)params.get("szbj");
         Integer ztm=(Integer)params.get("ztm");
         Page<XsZsxxbEntity> page = this.selectPage(
                 new Query<XsZsxxbEntity>(params).getPage(),
                 new EntityWrapper<XsZsxxbEntity>().
                 like(StringUtils.isNotBlank(username), "xsxh", username).
-                like(StringUtils.isNotBlank(bjmc), "szbj", bjmc).
+                like(StringUtils.isNotBlank(szbj), "szbj", szbj).
                 eq(  ztm != null && ztm != 0 ,"ztm",ztm).
                 orderBy("createTime",false)
 
