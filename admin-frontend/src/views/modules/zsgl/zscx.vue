@@ -2,11 +2,14 @@
   <div class="mod-config">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
+<!--
         <el-input v-model="dataForm.xsxm" placeholder="姓名" clearable></el-input>
+-->
         <el-input v-model="dataForm.xsxh" placeholder="学号" clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
+        <el-button @click="exportDataList()">导出</el-button>
         <el-button v-if="isAuth('zsgl:zscx:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
         <el-button v-if="isAuth('zsgl:zscx:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
@@ -140,7 +143,7 @@
     data () {
       return {
         dataForm: {
-          key: ''
+          xsxh: ''
         },
         dataList: [],
         pageIndex: 1,
@@ -158,6 +161,35 @@
       this.getDataList()
     },
     methods: {
+        //导出数据
+      exportDataList () {
+//          window.location.href="http://localhost:8001/zsgl/zscx/export/"
+//        window.open("/zsgl/zscx/export")
+//        this.dataListLoading = true
+        this.$http({
+          url: this.$http.adornUrl('/zsgl/zscx/export'),
+          method: 'post',
+          responseType:'arraybuffer',
+          params: this.$http.adornParams({
+            'xsxh': this.dataForm.xsxh
+          })
+        }).then(({data}) => {
+          if (data) {
+            const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8' })
+            const downloadElement = document.createElement('a')
+            const href = window.URL.createObjectURL(blob)
+            downloadElement.href = href
+            let fname = '学生证书信息表'
+            downloadElement.download =fname+'.xlsx'
+            document.body.appendChild(downloadElement)
+            downloadElement.click()
+            document.body.removeChild(downloadElement) // 下载完成移除元素
+            window.URL.revokeObjectURL(href) // 释放掉blob对象
+            this.getDataList()
+          }
+        })
+      },
+
       // 获取数据列表
       getDataList () {
         this.dataListLoading = true
@@ -167,7 +199,7 @@
           params: this.$http.adornParams({
             'page': this.pageIndex,
             'limit': this.pageSize,
-            'key': this.dataForm.key
+            'xsxh': this.dataForm.xsxh
           })
         }).then(({data}) => {
           if (data && data.code === 0) {

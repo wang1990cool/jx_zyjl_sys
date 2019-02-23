@@ -2,6 +2,7 @@ package io.admin.modules.zsgl.entity;
 
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import org.jeecgframework.poi.excel.annotation.Excel;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -25,30 +26,37 @@ public class XsZsxxbEntity implements Serializable {
 	/**
 	 * 学号
 	 */
+	@Excel(name="学号",orderNum = "1")
 	private String xsxh;
 	/**
 	 * 姓名
 	 */
+	@Excel(name="姓名",orderNum = "2")
 	private String xsxm;
 	/**
 	 * 所在班级
 	 */
+	@Excel(name="所在班级",orderNum = "3")
 	private String szbj;
 	/**
 	 * 身份证号
 	 */
+	@Excel(name="身份证号",orderNum = "4")
 	private String sfzh;
 	/**
 	 * 电话
 	 */
+	@Excel(name="联系电话",orderNum = "5")
 	private String telephone;
 	/**
 	 * 证书名称
 	 */
+	@Excel(name="证书名称",orderNum = "6")
 	private String zsmc;
 	/**
 	 * 获证日期
 	 */
+	@Excel(name="获证日期",orderNum = "7")
 	private String hzrq;
 	/**
 	 * 证书照片
