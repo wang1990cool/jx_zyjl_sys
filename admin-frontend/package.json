@@ -26,6 +26,7 @@
     "gulp-shell": "0.6.5",
     "jointjs": "^2.1.4",
     "lodash": "4.17.5",
+    "moment": "^2.24.0",
     "node-sass": "4.9.0",
     "sass-loader": "6.0.6",
     "svg-sprite-loader": "3.7.3",

@@ -3,19 +3,19 @@ package io.admin.modules.train.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import io.admin.common.utils.ShiroUtils;
+import io.admin.modules.sys.entity.SysUserEntity;
 import io.admin.modules.train.entity.TrainProjectEntity;
 import io.admin.modules.train.service.TrainProjectService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.admin.common.utils.PageUtils;
 import io.admin.common.utils.R;
 
+import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -61,11 +61,37 @@ public class TrainProjectController {
     @RequestMapping("/save")
     @RequiresPermissions("train:project:save")
     public R save(@RequestBody TrainProjectEntity trainProject){
+        SysUserEntity sysUserEntity = ShiroUtils.getUserEntity();
+
+        trainProject.setApplicantId(sysUserEntity.getUsername());
+        trainProject.setApplicantName(sysUserEntity.getUsercname());
+        trainProject.setApplicantDept(sysUserEntity.getUnit());
+
+
 		trainProjectService.insert(trainProject);
 
         return R.ok();
     }
 
+    @RequestMapping("/submit")
+    @RequiresPermissions("train:project:submit")
+    public R submit(@RequestBody String id) {
+        TrainProjectEntity trainProjectEntity = trainProjectService.selectById(id);
+        trainProjectEntity.setStatus("待中心审核");
+        trainProjectEntity.setStatusCode("2");
+        trainProjectService.updateById(trainProjectEntity);
+        return R.ok();
+    }
+
+    @RequestMapping("/withdraw")
+    @RequiresPermissions("train:project:withdraw")
+    public R withdraw(@RequestBody String id) {
+        TrainProjectEntity trainProjectEntity = trainProjectService.selectById(id);
+        trainProjectEntity.setStatus("未提交");
+        trainProjectEntity.setStatusCode("1");
+        trainProjectService.updateById(trainProjectEntity);
+        return R.ok();
+    }
     /**
      * 修改
      */
@@ -86,6 +112,20 @@ public class TrainProjectController {
 		trainProjectService.deleteBatchIds(Arrays.asList(ids));
 
         return R.ok();
+    }
+
+    @RequestMapping("/checkProjectIdIsExists/{projectId}")
+    @ResponseBody
+    public R checkProjectIdIsExists(@PathVariable("projectId") String projectId){
+        TrainProjectEntity trainProject = trainProjectService.selectOne(
+                new EntityWrapper<TrainProjectEntity>().
+                        eq("project_id", projectId)
+        );
+        if (trainProject != null) {
+            return R.error("项目编号已存在！");
+        }else {
+            return R.ok();
+        }
     }
 
 }
