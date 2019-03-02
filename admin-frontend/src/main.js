@@ -12,9 +12,11 @@ import httpRequest from '@/utils/httpRequest' // api: https://github.com/axios/a
 import { isAuth } from '@/utils'
 
 
+
 window.$ = require('jointjs')
 Vue.use(ElementUI)
 Vue.use(VueCookie)
+
 Vue.config.productionTip = false
 
 // 非生产环境, 适配mockjs模拟数据                 // api: https://github.com/nuysoft/Mock

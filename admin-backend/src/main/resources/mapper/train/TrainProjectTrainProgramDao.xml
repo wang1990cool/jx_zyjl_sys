@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.admin.modules.train.dao.TrainProjectTrainProgramDao">
+
+<insert id="createWorkload" >
+    insert into train_project_workload(project_id, teacher_id, teacher_name, workload)
+    select  project_id, teacher_id, teacher_name, workload from view_train_project_workload where project_id = #{project}
+</insert>
+
+</mapper>

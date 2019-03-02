@@ -39,7 +39,7 @@ public class TrainProjectEntity implements Serializable {
 	/**
 	 * 培养方案
 	 */
-	private byte[] trainingPlan;
+	private String trainingPlan;
 	/**
 	 * 审核意见
 	 */
