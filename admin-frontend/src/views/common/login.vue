@@ -29,6 +29,9 @@
             <el-form-item>
               <el-button class="login-btn-submit" type="primary" @click="dataFormSubmit()">登录</el-button>
             </el-form-item>
+            <el-form-item>
+              <a href="https://security.weibo.com/iforgot/loginname?entry=vipmail" target="_blank">忘记密码？</a>
+            </el-form-item>
           </el-form>
         </div>
       </div>
