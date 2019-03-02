@@ -20,12 +20,14 @@ public class TrainProjectServiceImpl extends ServiceImpl<TrainProjectDao, TrainP
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         String projectId = (String)params.get("projectId");
+        String projectName = (String)params.get("projectName");
 
         Page<TrainProjectEntity> page = this.selectPage(
                 new Query<TrainProjectEntity>(params).getPage(),
                 new EntityWrapper<TrainProjectEntity>().
                         like(StringUtils.isNotBlank(projectId), "project_id", projectId).
-                        orderBy("id")
+                        like(StringUtils.isNotBlank(projectName), "project_name", projectName).
+                        orderBy("id desc")
         );
 
         return new PageUtils(page);
@@ -44,7 +46,7 @@ public class TrainProjectServiceImpl extends ServiceImpl<TrainProjectDao, TrainP
                         like(StringUtils.isNotBlank(projectId), "project_id", projectId).
                         like(StringUtils.isNotBlank(projectName), "project_name", projectName).
                         in("status_code", statusCode).
-                        orderBy("id")
+                        orderBy("status_code asc")
         );
 
         return new PageUtils(page);
