@@ -2,11 +2,31 @@
   <div class="mod-config">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
-<!--
-        <el-input v-model="dataForm.xsxm" placeholder="姓名" clearable></el-input>
-        <el-input v-model="dataForm.xsxh" placeholder="学号" clearable></el-input>
--->
-        <el-input v-model="dataForm.szbj" placeholder="所在班级" clearable></el-input>
+        <el-input v-model="dataForm.sznd" placeholder="年度" clearable></el-input>
+      </el-form-item>
+      <el-form-item  label="" prop="szxb">
+        <el-select v-model="dataForm.szxb" label="栏目" placeholder="系部"  >
+          <el-option v-for="item in szxbList" :key="item.label" :label="item.label" :value="item.label" >
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item  label="" prop="szzy">
+        <el-select v-model="dataForm.szzy" label="栏目" placeholder="专业"  >
+          <el-option v-for="item in szzyList" :key="item.label" :label="item.label" :value="item.label" >
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item  label="" prop="szbj">
+        <el-select v-model="dataForm.szbj" label="栏目" placeholder="班级"  >
+          <el-option v-for="item in szbjList" :key="item.label" :label="item.label" :value="item.label" >
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item  label="" prop="ztm">
+        <el-select v-model="dataForm.ztm" label="栏目" placeholder="状态"  >
+          <el-option v-for="item in ztList" :key="item.value" :label="item.label" :value="item.value" >
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
@@ -107,10 +127,10 @@
         label="状态">
       </el-table-column>
       <el-table-column
-        prop="createTime"
+        prop="hzrq"
         header-align="center"
         align="center"
-        label="创建时间">
+        label="获证日期">
       </el-table-column>
 <!--      <el-table-column
         fixed="right"
@@ -143,13 +163,35 @@
   export default {
     data () {
       return {
+          ztList : [{
+            value: '1',
+            label: '待提交'
+          }, {
+            value: '2',
+            label: '待班级审核'
+          }, {
+            value: '3',
+            label: '班级审核不通过'
+          }, {
+            value: '4',
+            label: '待中心审核'
+          }, {
+            value: '5',
+            label: '中心审核不通过'
+          }, {
+            value: '6',
+            label: '中心审核通过'
+          }],
         dataForm: {
-          szbj: ''
+          sznd: '',
+          szbj: '',
+          ztm: ''
         },
         dataList: [],
         pageIndex: 1,
         pageSize: 10,
         totalPage: 0,
+        order:'id desc',
         dataListLoading: false,
         dataListSelections: [],
         addOrUpdateVisible: false
@@ -170,7 +212,9 @@
           method: 'post',
           responseType:'arraybuffer',
           params: this.$http.adornParams({
-            'szbj': this.dataForm.szbj
+            'sznd': this.dataForm.sznd,
+            'szbj': this.dataForm.szbj,
+            'ztm' : this.dataForm.ztm
           })
         }).then(({data}) => {
           if (data) {
@@ -198,7 +242,11 @@
           params: this.$http.adornParams({
             'page': this.pageIndex,
             'limit': this.pageSize,
-            'szbj': this.dataForm.szbj
+            'order': this.order,
+            'sznd': this.dataForm.sznd,
+            'szbj': this.dataForm.szbj,
+            'ztm' : this.dataForm.ztm
+
           })
         }).then(({data}) => {
           if (data && data.code === 0) {

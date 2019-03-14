@@ -37,7 +37,7 @@ public class BjshController {
     @RequiresPermissions("zsgl:bjsh:list")
     public R list(@RequestParam Map<String, Object> params){
         params.put("szbj",getUserEntity().getUnit());
-        params.put("ztm",2);
+        params.put("ztm","2");
         PageUtils page = xsZsxxbService.queryPage(params);
 
         return R.ok().put("page", page);

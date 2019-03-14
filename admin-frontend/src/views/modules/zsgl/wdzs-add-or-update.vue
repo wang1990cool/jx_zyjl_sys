@@ -10,9 +10,11 @@
     <el-form-item label="电话" prop="telephone">
       <el-input v-model="dataForm.telephone" placeholder="电话"></el-input>
     </el-form-item>
-    <el-form-item label="证书名称" prop="zsmc">
-      <el-input v-model="dataForm.zsmc" placeholder="证书名称"></el-input>
-      <el-button type="primary" icon="search">搜索</el-button>
+    <el-form-item  label="证书名称" prop="zsmc">
+      <el-select v-model="dataForm.zsmc" label="栏目" placeholder="请选择"  >
+        <el-option v-for="item in zsmcList" :key="item.label" :label="item.label" :value="item.label" >
+        </el-option>
+      </el-select>
     </el-form-item>
     <el-form-item label="获证日期" prop="hzrq">
       <el-date-picker
@@ -110,6 +112,7 @@
           zppath:''
         },
         imageUrl: '',
+        zsmcList: [],
         dataRule: {
           sfzh: [
             { required: true, message: '身份证号不能为空', trigger: 'blur' }
@@ -131,24 +134,31 @@
         this.dataForm.id = id || 0
         this.visible = true
         this.imageUrl = ''
-        this.$nextTick(() => {
-          this.$refs['dataForm'].resetFields()
-          if (this.dataForm.id) {
-            this.$http({
-              url: this.$http.adornUrl(`/zsgl/wdzs/info/${this.dataForm.id}`),
-              method: 'get',
-              params: this.$http.adornParams()
-            }).then(({data}) => {
-              if (data && data.code === 0) {
-                this.dataForm.sfzh = data.xsZsxxb.sfzh
-                this.dataForm.telephone = data.xsZsxxb.telephone
-                this.dataForm.zsmc = data.xsZsxxb.zsmc
-                this.dataForm.hzrq = data.xsZsxxb.hzrq
-                this.imageUrl = 'data:image/png;base64,' + data.xsZsxxb.zszp
-                this.dataForm.zppath = data.xsZsxxb.zppath
-              }
-            })
-          }
+        this.$http({
+          url: this.$http.adornUrl('/dic/zdzsmcxxb/select'),
+          method: 'get'
+        }).then(({data}) => {
+          this.zsmcList = data.zsmclist
+        }).then(() => {
+          this.$nextTick(() => {
+            this.$refs['dataForm'].resetFields()
+            if (this.dataForm.id) {
+              this.$http({
+                url: this.$http.adornUrl(`/zsgl/wdzs/info/${this.dataForm.id}`),
+                method: 'get',
+                params: this.$http.adornParams()
+              }).then(({data}) => {
+                if (data && data.code === 0) {
+                  this.dataForm.sfzh = data.xsZsxxb.sfzh
+                  this.dataForm.telephone = data.xsZsxxb.telephone
+                  this.dataForm.zsmc = data.xsZsxxb.zsmc
+                  this.dataForm.hzrq = data.xsZsxxb.hzrq
+                  this.imageUrl = 'data:image/png;base64,' + data.xsZsxxb.zszp
+                  this.dataForm.zppath = data.xsZsxxb.zppath
+                }
+              })
+            }
+          })
         })
       },
 

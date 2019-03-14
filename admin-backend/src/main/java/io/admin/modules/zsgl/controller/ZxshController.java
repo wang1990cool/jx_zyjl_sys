@@ -33,7 +33,7 @@ public class ZxshController {
     @RequestMapping("/list")
     @RequiresPermissions("zsgl:zxsh:list")
     public R list(@RequestParam Map<String, Object> params){
-        params.put("ztm",4);
+        params.put("ztm","4");
         PageUtils page = xsZsxxbService.queryPage(params);
 
         return R.ok().put("page", page);

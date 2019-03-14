@@ -1,8 +1,6 @@
 package io.admin.modules.dic.controller;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +89,20 @@ public class ZdZsmcxxbController {
 			zdZsmcxxbService.deleteBatchIds(Arrays.asList(ids));
 
         return R.ok();
+    }
+
+    @RequestMapping("/select")
+    @RequiresPermissions("dic:zdzsmcxxb:update")
+    public R select(){
+        List<ZdZsmcxxbEntity> list = zdZsmcxxbService.selectList();
+        ArrayList arrays = new ArrayList();
+        for (int i=0;i<list.size();i++){
+            Map map = new HashMap();
+            map.put("value",list.get(i).getId());
+            map.put("label",list.get(i).getName());
+            arrays.add(map);
+        }
+        return R.ok().put("zsmclist",arrays);
     }
 
 }
