@@ -1,6 +1,7 @@
 package io.admin.modules.train.controller;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -66,6 +67,8 @@ public class TrainProjectController {
         trainProject.setApplicantId(sysUserEntity.getUsername());
         trainProject.setApplicantName(sysUserEntity.getUsercname());
         trainProject.setApplicantDept(sysUserEntity.getUnit());
+        trainProject.setCreateUserId(sysUserEntity.getCreateUserId());
+        trainProject.setCreateTime(new Date());
 
 
 		trainProjectService.insert(trainProject);

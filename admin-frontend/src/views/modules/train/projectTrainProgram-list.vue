@@ -66,6 +66,12 @@
             label="上课时间">
           </el-table-column>
           <el-table-column
+            prop="classAddress"
+            header-align="center"
+            align="center"
+            label="上课地点">
+          </el-table-column>
+          <el-table-column
             fixed="right"
             header-align="center"
             align="center"

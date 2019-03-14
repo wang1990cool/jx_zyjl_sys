@@ -1,5 +1,7 @@
 package io.admin.modules.train.service.impl;
 
+import io.admin.common.utils.ShiroUtils;
+import io.admin.modules.sys.entity.SysUserEntity;
 import io.admin.modules.train.dao.TrainProjectDao;
 import io.admin.modules.train.entity.TrainProjectEntity;
 import io.admin.modules.train.service.TrainProjectService;
@@ -22,11 +24,15 @@ public class TrainProjectServiceImpl extends ServiceImpl<TrainProjectDao, TrainP
         String projectId = (String)params.get("projectId");
         String projectName = (String)params.get("projectName");
 
+        SysUserEntity sysUserEntity = ShiroUtils.getUserEntity();
+        String userName = sysUserEntity.getUsername();
+
         Page<TrainProjectEntity> page = this.selectPage(
                 new Query<TrainProjectEntity>(params).getPage(),
                 new EntityWrapper<TrainProjectEntity>().
                         like(StringUtils.isNotBlank(projectId), "project_id", projectId).
                         like(StringUtils.isNotBlank(projectName), "project_name", projectName).
+                        eq("applicant_id", userName).
                         orderBy("id desc")
         );
 
@@ -40,12 +46,16 @@ public class TrainProjectServiceImpl extends ServiceImpl<TrainProjectDao, TrainP
 //        String order = (String)params.get("order");
         String[] statusCode = (String[])params.get("statusCode");
 
+        SysUserEntity sysUserEntity = ShiroUtils.getUserEntity();
+        String userName = sysUserEntity.getUsername();
+
         Page<TrainProjectEntity> page = this.selectPage(
                 new Query<TrainProjectEntity>(params).getPage(),
                 new EntityWrapper<TrainProjectEntity>().
                         like(StringUtils.isNotBlank(projectId), "project_id", projectId).
                         like(StringUtils.isNotBlank(projectName), "project_name", projectName).
                         in("status_code", statusCode).
+                        eq("applicant_id", userName).
                         orderBy("status_code asc")
         );
 

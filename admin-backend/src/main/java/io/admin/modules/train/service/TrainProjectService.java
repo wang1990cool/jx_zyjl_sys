@@ -18,5 +18,6 @@ public interface TrainProjectService extends IService<TrainProjectEntity> {
     PageUtils queryPage(Map<String, Object> params);
 
     PageUtils projectQueryPage(Map<String, Object> params);
+
 }
 

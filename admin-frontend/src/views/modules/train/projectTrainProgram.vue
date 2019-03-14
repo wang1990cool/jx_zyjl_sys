@@ -69,30 +69,35 @@
         prop="applicantName"
         header-align="center"
         align="center"
+        width="100"
         label="申请人姓名">
       </el-table-column>
       <el-table-column
         prop="applicantDept"
         header-align="center"
         align="center"
+        width="140"
         label="申请人部门">
       </el-table-column>
       <el-table-column
         prop="auditorId"
         header-align="center"
         align="center"
+        width="100"
         label="审核人工号">
       </el-table-column>
       <el-table-column
         prop="auditorName"
         header-align="center"
         align="center"
+        width="100"
         label="审核人姓名">
       </el-table-column>
       <el-table-column
         prop="auditTime"
         header-align="center"
         align="center"
+        width="100"
         :formatter="dateFormat"
         label="审核时间">
       </el-table-column>
@@ -100,10 +105,11 @@
         prop="statusCode"
         header-align="center"
         align="center"
+        width="100"
         label="状态">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.statusCode === '3'" size="small" type="primary">审核通过</el-tag>
-          <el-tag v-if="scope.row.statusCode === '4'" size="small" type="danger">方案已填写</el-tag>
+          <el-tag v-if="scope.row.statusCode === '4'" size="small" type="danger">课程已填写</el-tag>
           <el-tag v-if="scope.row.statusCode === '5'" size="small" type="info">项目结束</el-tag>
         </template>
       </el-table-column>
@@ -112,11 +118,12 @@
         fixed="right"
         header-align="center"
         align="center"
-        width="150"
+        width="160"
         label="操作">
         <template slot-scope="scope">
           <el-button v-if="scope.row.statusCode !== '5'" type="text" size="small" @click="addOrUpdateHandle(scope.row.id, scope.row.projectId)">填写</el-button>
-          <el-button type="text" size="small" @click="detailHandle(scope.row.id, scope.row.projectId)">方案详情</el-button>
+          <el-button type="text" size="small" @click="projectDetailHandle(scope.row.id)">详情</el-button>
+          <el-button type="text" size="small" @click="detailHandle(scope.row.id, scope.row.projectId)">课程详情</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -134,6 +141,7 @@
 
     <project-train-program v-if="addOrUpdateVisible" ref="projectTrainProgram" @refreshDataList="getDataList"></project-train-program>
     <train-program-detail-list v-if="detailVisible" ref="trainProgramDetailList"></train-program-detail-list>
+    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
 
   </div>
 </template>
@@ -142,6 +150,7 @@
   // import projectAudit from './projectAudit-audit'
   import projectTrainProgram from './projectTrainProgram-list'
   import trainProgramDetailList from './projectTrainProgram-detail-list'
+  import AddOrUpdate from './project-add-or-update'
   let moment = require('moment');
 
   export default {
@@ -163,7 +172,8 @@
     },
     components: {
       projectTrainProgram,
-      trainProgramDetailList
+      trainProgramDetailList,
+      AddOrUpdate
     },
     activated () {
       this.getDataList()
@@ -219,6 +229,13 @@
         this.addOrUpdateVisible = true;
         this.$nextTick(() => {
           this.$refs.projectTrainProgram.init(id, projectId)
+        })
+      },
+
+      projectDetailHandle (id) {
+        this.addOrUpdateVisible = true;
+        this.$nextTick(() => {
+          this.$refs.addOrUpdate.init(id, true)
         })
       },
 

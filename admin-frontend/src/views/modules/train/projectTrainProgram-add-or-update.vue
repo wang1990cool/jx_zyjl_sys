@@ -19,6 +19,9 @@
     <el-form-item label="课时" prop="classHour">
       <el-input v-model="dataForm.classHour" placeholder="课时"></el-input>
     </el-form-item>
+      <el-form-item label="上课地址" prop="classAddress">
+        <el-input v-model="dataForm.classAddress" placeholder="上课地址"></el-input>
+      </el-form-item>
     <el-form-item label="上课日期" prop="classDate">
       <el-date-picker
         v-model="dataForm.classDate"
@@ -26,6 +29,7 @@
         placeholder="选择日期">
       </el-date-picker>
     </el-form-item>
+
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">取消</el-button>
@@ -55,7 +59,8 @@
           teacherId: '',
           teacherName: '',
           classHour: '',
-          classDate: ''
+          classDate: '',
+          classAddress: ''
         },
         dataRule: {
           projectId: [
@@ -67,7 +72,7 @@
           teacherName: [
             { required: true, message: '教师姓名不能为空', trigger: 'blur' }
           ],
-          classDate: [
+          classHour: [
             { required: true, validator: classHourRule, trigger: 'blur' }
           ]
         }
@@ -92,6 +97,7 @@
                 this.dataForm.teacherName = data.projectTrainProgram.teacherName
                 this.dataForm.classHour = data.projectTrainProgram.classHour
                 this.dataForm.classDate = data.projectTrainProgram.classDate
+                this.dataForm.classAddress = data.projectTrainProgram.classAddress
               }
             })
           }
@@ -111,6 +117,7 @@
                 'teacherId': this.dataForm.teacherId,
                 'teacherName': this.dataForm.teacherName,
                 'classHour': this.dataForm.classHour,
+                'classAddress': this.dataForm.classAddress,
                 'classDate': moment(this.dataForm.classDate).format('YYYY-MM-DD')
               })
             }).then(({data}) => {

@@ -76,12 +76,14 @@
         prop="auditorId"
         header-align="center"
         align="center"
+        width="100"
         label="审核人工号">
       </el-table-column>
       <el-table-column
         prop="auditorName"
         header-align="center"
         align="center"
+        width="100"
         label="审核人姓名">
       </el-table-column>
       <el-table-column
@@ -95,6 +97,7 @@
         prop="statusCode"
         header-align="center"
         align="center"
+        width="100"
         label="状态">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.statusCode === '5'" size="small" type="info">项目结束</el-tag>
@@ -108,6 +111,7 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
+          <el-button type="text" size="small" @click="projectDetailHandle(scope.row.id)">详情</el-button>
           <el-button type="text" size="small" @click="detailHandle(scope.row.id, scope.row.projectId)">工作量详情</el-button>
         </template>
       </el-table-column>
@@ -125,6 +129,7 @@
     <!--<project-audit v-if="projectAuditVisible" ref="projectAudit" @refreshDataList="getDataList"></project-audit>-->
 
     <project-workload-list v-if="detailVisible" ref="projectWorkloadList"></project-workload-list>
+    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
 
   </div>
 </template>
@@ -132,6 +137,7 @@
 <script>
   // import projectAudit from './projectAudit-audit'
   import projectWorkloadList from './projectWorkload-list'
+  import AddOrUpdate from './project-add-or-update'
 
   let moment = require('moment');
 
@@ -148,11 +154,13 @@
         dataListLoading: false,
         dataListSelections: [],
         order:'id desc',
-        detailVisible: false
+        detailVisible: false,
+        addOrUpdateVisible: false
       }
     },
     components: {
-      projectWorkloadList
+      projectWorkloadList,
+      AddOrUpdate
     },
     activated () {
       this.getDataList()
@@ -208,6 +216,13 @@
         this.detailVisible = true;
         this.$nextTick(() => {
           this.$refs.projectWorkloadList.init(id, projectId)
+        })
+      },
+
+      projectDetailHandle (id) {
+        this.addOrUpdateVisible = true;
+        this.$nextTick(() => {
+          this.$refs.addOrUpdate.init(id, true)
         })
       },
       dateFormat: function (row, column) {

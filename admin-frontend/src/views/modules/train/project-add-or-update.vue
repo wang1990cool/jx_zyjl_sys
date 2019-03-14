@@ -1,24 +1,35 @@
 <template>
   <el-dialog
-    :title="!dataForm.id ? '新增' : '修改'"
+    :title="title"
     :close-on-click-modal="false"
     :visible.sync="visible">
 
     <el-form :model="dataForm" :rules="dataRule" size="mini" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="130px">
 
-        <el-form-item label="项目编号" prop="projectId">
+        <el-form-item label="培训编号" prop="projectId" :disabled="isDetail">
           <el-input v-model="dataForm.projectId" placeholder="项目编号" ></el-input>
         </el-form-item>
 
-        <el-form-item label="项目名称" prop="projectName">
+        <el-form-item label="培训名称" prop="projectName">
           <el-input v-model="dataForm.projectName" placeholder="项目名称"></el-input>
         </el-form-item>
 
 
-        <el-form-item label="项目预算" prop="projectBudget">
+        <el-form-item label="预算金额" prop="projectBudget">
           <!--<el-input-number placeholder="项目预算" v-model="dataForm.projectBudget" controls-position="right"  ></el-input-number>-->
-
           <el-input v-model="dataForm.projectBudget" placeholder="项目预算"></el-input>
+        </el-form-item>
+        <el-form-item label="培训课时" prop="trainClassHour">
+          <el-input v-model="dataForm.trainClassHour" placeholder="培训课时"></el-input>
+        </el-form-item>
+        <el-form-item label="培训目标" prop="trainTarget">
+          <el-input type="textarea" v-model="dataForm.trainTarget" placeholder="培训目标"></el-input>
+        </el-form-item>
+        <el-form-item label="课时分配" prop="classHourAllocation">
+          <el-input type="textarea" v-model="dataForm.classHourAllocation" placeholder="课时分配"></el-input>
+        </el-form-item>
+        <el-form-item label="培训要求" prop="trainRequire">
+          <el-input type="textarea" v-model="dataForm.trainRequire" placeholder="培训要求"></el-input>
         </el-form-item>
 
         <!--<el-form-item label="培养方案" prop="trainingPlan">-->
@@ -57,7 +68,7 @@
         </el-form>
         <span slot="footer" class="dialog-footer">
           <el-button @click="visible = false">取消</el-button>
-          <el-button type="primary" @click="dataFormSubmit()">确定</el-button>
+          <el-button type="primary" @click="dataFormSubmit()" v-if="!isDetail">确定</el-button>
         </span>
       </el-dialog>
 </template>
@@ -67,7 +78,7 @@
     data () {
       let projectIdRule =  (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('项目编号不能为空'))
+          callback(new Error('培训编号不能为空'))
         } else {
           this.$http({
             url: this.$http.adornUrl(`/train/project/checkProjectIdIsExists/${value}`),
@@ -75,7 +86,7 @@
             params: this.$http.adornParams()
           }).then(({data}) => {
               if (data && data.code !== 0) {
-                 callback(new Error('项目编号已存在'));
+                 callback(new Error('培训编号已存在'));
               } else {
                 callback();
               }
@@ -92,9 +103,10 @@
         }
       };
 
-
       return {
         visible: false,
+        isDetail: false,
+        title: '',
         dataForm: {
           id: 0,
           projectId: '',
@@ -109,14 +121,18 @@
           auditorName: '',
           auditTime: '',
           status: '',
-          statusCode: ''
+          statusCode: '',
+          trainClassHour: '',
+          trainTarget: '',
+          classHourAllocation: '',
+          trainRequire: ''
         },
         dataRule: {
           projectId: [
             { required: true, validator: projectIdRule, trigger: 'blur' }
           ],
           projectName: [
-            { required: true, message: '项目名称不能为空', trigger: 'blur' }
+            { required: true, message: '培训名称不能为空', trigger: 'blur' }
           ],
           projectBudget: [
             { required: true, validator: projectBudgetRule, trigger: 'blur' }
@@ -125,8 +141,14 @@
       }
     },
     methods: {
-      init (id) {
+      init (id, isDetail) {
+        this.isDetail = isDetail;
         this.dataForm.id = id || 0
+        if (isDetail) {
+          this.title = '详情'
+        } else {
+          this.title = !this.dataForm.id ? '新增' : '修改'
+        }
         this.visible = true
         this.$nextTick(() => {
           this.$refs['dataForm'].resetFields()
@@ -150,6 +172,10 @@
                 this.dataForm.auditTime = data.trainProject.auditTime
                 this.dataForm.status = data.trainProject.status
                 this.dataForm.statusCode = data.trainProject.statusCode
+                this.dataForm.trainClassHour = data.trainProject.trainClassHour
+                this.dataForm.trainTarget = data.trainProject.trainTarget
+                this.dataForm.classHourAllocation = data.trainProject.classHourAllocation
+                this.dataForm.trainRequire = data.trainProject.trainRequire
               }
             })
           }
@@ -177,6 +203,10 @@
                 'auditTime': this.dataForm.auditTime,
                 'status': "草稿状态",
                 'statusCode': "1",
+                'trainClassHour': this.dataForm.trainClassHour,
+                'trainTarget': this.dataForm.trainTarget,
+                'classHourAllocation': this.dataForm.classHourAllocation,
+                'trainRequire': this.dataForm.trainRequire
               })
             }).then(({data}) => {
               if (data && data.code === 0) {

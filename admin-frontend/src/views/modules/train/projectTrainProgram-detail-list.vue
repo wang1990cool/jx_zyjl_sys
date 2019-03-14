@@ -1,6 +1,6 @@
 <template>
     <el-dialog
-      :title="'培养方案详情'"
+      :title="'培训课程详情'"
       :close-on-click-modal="false"
       :visible.sync="visible">
       <div class="mod-config">
@@ -57,6 +57,12 @@
             align="center"
             :formatter="dateFormat"
             label="上课时间">
+          </el-table-column>
+          <el-table-column
+            prop="classAddress"
+            header-align="center"
+            align="center"
+            label="上课地点">
           </el-table-column>
         </el-table>
         <el-pagination

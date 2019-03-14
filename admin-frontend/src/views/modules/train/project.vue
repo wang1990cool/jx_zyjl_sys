@@ -45,20 +45,28 @@
         prop="projectId"
         header-align="center"
         align="center"
-        label="项目编号"
+        label="培训编号"
       >
       </el-table-column>
       <el-table-column
         prop="projectName"
         header-align="center"
         align="center"
-        label="项目名称">
+        label="培训名称">
       </el-table-column>
       <el-table-column
         prop="projectBudget"
         header-align="center"
         align="center"
-        label="项目预算">
+        width="100"
+        label="预算金额">
+      </el-table-column>
+      <el-table-column
+        prop="trainClassHour"
+        header-align="center"
+        align="center"
+        width="100"
+        label="培训课时">
       </el-table-column>
 
       <!--<el-table-column-->
@@ -71,6 +79,7 @@
         prop="applicantName"
         header-align="center"
         align="center"
+        width="100"
         label="申请人姓名">
       </el-table-column>
       <!--<el-table-column-->
@@ -89,18 +98,22 @@
         prop="auditorName"
         header-align="center"
         align="center"
+        width="100"
         label="审核人姓名">
       </el-table-column>
       <el-table-column
         prop="auditTime"
         header-align="center"
         align="center"
+        :formatter="dateFormat"
+        width="100"
         label="审核时间">
       </el-table-column>
       <el-table-column
         prop="statusCode"
         header-align="center"
         align="center"
+        width="100"
         label="状态">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.statusCode === '1'" size="small" type="warning">草稿状态</el-tag>
@@ -111,21 +124,20 @@
           <el-tag v-if="scope.row.statusCode === '9'" size="small" type="danger">中心驳回</el-tag>
         </template>
       </el-table-column>
-
-
       <el-table-column
         fixed="right"
         header-align="center"
-        align="center"
-        width="150"
+        align="left"
+        width="220"
         label="操作">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.statusCode === '1' " type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
-          <el-button v-if="scope.row.statusCode === '1'" type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
-          <el-button v-if="scope.row.statusCode === '1'" type="text" size="small" @click="sumbitHandle(scope.row.id)">提交</el-button>
-          <el-button v-if="scope.row.statusCode === '4' || scope.row.statusCode === '5'" type="text" size="small" @click="detailHandle(scope.row.id, scope.row.projectId)">方案详情</el-button>
-
+          <el-button v-if="scope.row.statusCode === '1' || scope.row.statusCode === '9' " type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
+          <el-button v-if="scope.row.statusCode === '1' || scope.row.statusCode === '9'" type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
+          <el-button v-if="scope.row.statusCode === '1' || scope.row.statusCode === '9' " type="text" size="small" @click="sumbitHandle(scope.row.id)">提交</el-button>
           <el-button v-if="scope.row.statusCode === '2'" type="text" size="small" @click="withdrawHandle(scope.row.id)">撤回</el-button>
+          <el-button v-if="scope.row.statusCode === '4' || scope.row.statusCode === '5'" type="text" size="small" @click="trainProgramDetailHandle(scope.row.id, scope.row.projectId)">课程详情</el-button>
+          <el-button type="text" size="small" @click="detailHandle(scope.row.id)">详情</el-button>
+
           <!--<el-button v-if="scope.row.statusCode === '3'" type="text" size="small" @click="addOrUpdateHandle(scope.row.id, scope.row.projectId)">方案填写</el-button>-->
 
         </template>
@@ -150,7 +162,7 @@
 <script>
   import AddOrUpdate from './project-add-or-update'
   import trainProgramDetailList from './projectTrainProgram-detail-list'
-
+  let moment = require('moment');
   export default {
     data () {
       return {
@@ -231,10 +243,17 @@
         })
       },
 
-      detailHandle (id, projectId) {
+      trainProgramDetailHandle (id, projectId) {
         this.detailVisible = true;
         this.$nextTick(() => {
           this.$refs.trainProgramDetailList.init(id, projectId)
+        })
+      },
+
+      detailHandle (id) {
+        this.addOrUpdateVisible = true;
+        this.$nextTick(() => {
+          this.$refs.addOrUpdate.init(id, true)
         })
       },
 
@@ -334,6 +353,13 @@
        } else {
          this.$message.error('请选择"草稿状态"的记录')
        }
+      },
+      dateFormat: function(row, column) {
+        var date = row[column.property];
+        if (date == undefined) {
+          return "";
+        }
+        return moment(date).format('YYYY-MM-DD');
       }
     }
   }
