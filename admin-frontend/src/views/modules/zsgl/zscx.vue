@@ -181,6 +181,9 @@
           }, {
             value: '6',
             label: '中心审核通过'
+          }, {
+            value: '0',
+            label: '所有'
           }],
         dataForm: {
           sznd: '',

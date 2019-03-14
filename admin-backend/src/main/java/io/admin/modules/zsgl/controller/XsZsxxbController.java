@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -145,11 +148,27 @@ public class XsZsxxbController {
 */
 
         params.remove("t");
+//        Map<String, Object> newparams= new HashMap<String, Object>();
+        String ztmstr=(String)params.get("ztm");
+        Integer ztm=0;
+        if(!ztmstr.equals("") && ztmstr != null){
+            ztm = Integer.parseInt(ztmstr);
+        }
+        String hzrq=(String)params.get("sznd");
+//        if(!sznd.equals("") && sznd!=null ){
+//            newparams.put("hzrq",sznd);
+//        }
+        String szbj=(String)params.get("szbj");
+//        if(!szbj.equals("") && szbj!=null ){
+//            newparams.put("szbj",szbj);
+//        }
+/*
         for (Map.Entry<String, Object> entry : params.entrySet()) {
-            if( entry.getValue().equals("") ){
+            if( entry.getValue().equals("") || entry.getValue()==null){
                 params.remove(entry.getKey());
             }
         }
+*/
 /*
 
   //poi方法 xls
@@ -182,7 +201,11 @@ public class XsZsxxbController {
             row.createCell(i).setCellValue(headers[i]);
         }
 
-        List<XsZsxxbEntity> zsxxList=xsZsxxbService.selectByMap(params);
+        List<XsZsxxbEntity> zsxxList=xsZsxxbService.selectList(new EntityWrapper<XsZsxxbEntity>().
+                like(StringUtils.isNotBlank(hzrq), "hzrq", hzrq).
+                like(StringUtils.isNotBlank(szbj), "szbj", szbj).
+                eq(   ztm > 0 ,"ztm",ztm)
+        );
 
         //在表中存放查询到的数据放入对应的列
         for (XsZsxxbEntity xsZsxxbEntity : zsxxList) {
