@@ -92,7 +92,7 @@ public class ZdZsmcxxbController {
     }
 
     @RequestMapping("/select")
-    @RequiresPermissions("dic:zdzsmcxxb:update")
+    @RequiresPermissions("dic:zdzsmcxxb:select")
     public R select(){
         List<ZdZsmcxxbEntity> list = zdZsmcxxbService.selectList();
         ArrayList arrays = new ArrayList();

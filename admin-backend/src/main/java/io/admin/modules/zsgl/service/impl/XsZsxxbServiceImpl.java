@@ -24,7 +24,7 @@ public class XsZsxxbServiceImpl extends ServiceImpl<XsZsxxbDao, XsZsxxbEntity> i
         String szbj=(String)params.get("szbj");
         String ztmstr=(String)params.get("ztm");
         Integer ztm=0;
-        if(!ztmstr.equals("") && ztmstr != null){
+        if(ztmstr != null && !ztmstr.equals("")){
             ztm = Integer.parseInt(ztmstr);
         }
 
