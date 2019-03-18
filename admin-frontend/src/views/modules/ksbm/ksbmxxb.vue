@@ -2,8 +2,12 @@
   <div class="mod-config">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
-        <el-button v-if="isAuth('zsgl:wdzs:save')" type="primary" @click="addOrUpdateHandle(0,0)">新增</el-button>
-        <el-button v-if="isAuth('zsgl:wdzs:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-input v-model="dataForm.ksnd" placeholder="考试年度" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button @click="getDataList()">查询</el-button>
+        <el-button v-if="isAuth('ksbm:ksbmxxb:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('ksbm:ksbmxxb:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -18,36 +22,56 @@
         align="center"
         width="50">
       </el-table-column>
-      <el-table-column v-if="false"
+<!--
+      <el-table-column
         prop="id"
         header-align="center"
         align="center"
-        width="80"
-        label="ID">
+        label="id">
       </el-table-column>
+-->
       <el-table-column
-        type="index"
-        width="50"
-        label="序号">
-      </el-table-column>
-      <el-table-column
-        prop="xsxh"
+        prop="ksnd"
         header-align="center"
         align="center"
-        label="学号">
+        label="考试年份">
       </el-table-column>
+
+      <el-table-column
+        prop="ksxmmc"
+        header-align="center"
+        align="center"
+        label="考试名称">
+      </el-table-column>
+<!--
+
       <el-table-column
         prop="xsxm"
         header-align="center"
         align="center"
         label="姓名">
       </el-table-column>
+-->
+
       <el-table-column
-        prop="szbj"
+        prop="sex"
         header-align="center"
         align="center"
-        label="所在班级">
+        label="性别">
       </el-table-column>
+      <el-table-column
+        prop="birth"
+        header-align="center"
+        align="center"
+        label="出生日期">
+      </el-table-column>
+      <el-table-column
+        prop="mz"
+        header-align="center"
+        align="center"
+        label="民族">
+      </el-table-column>
+
       <el-table-column
         prop="sfzh"
         header-align="center"
@@ -58,42 +82,36 @@
         prop="telephone"
         header-align="center"
         align="center"
-        label="电话">
+        label="联系电话">
       </el-table-column>
+<!--
+
       <el-table-column
-        prop="zsmc"
+        prop="email"
         header-align="center"
         align="center"
-        label="证书名称">
+        label="email">
       </el-table-column>
+-->
+
       <el-table-column
-                       header-align="center"
-                       align="center"
-                       width="80"
-                       label="证书照片">
+        header-align="center"
+        align="center"
+        width="80"
+        label="照片">
         <template slot-scope="scope">
-          <el-button  v-if="isAuth('zsgl:wdzs:info')" type="text" size="small" @click="zszpHandle(scope.row.id)">查看证书 </el-button>
+          <el-button  v-if="isAuth('ksbm:ksbmxxb:info')" type="text" size="small" @click="zszpHandle(scope.row.id)">查看证书 </el-button>
         </template>
       </el-table-column>
-      <el-table-column
-        v-if="false"
-        prop="ztm"
-        header-align="center"
-        align="center"
-        label="状态码">
-      </el-table-column>
-      <el-table-column
-        prop="zt"
-        header-align="center"
-        align="center"
-        label="状态">
-      </el-table-column>
+
+
       <el-table-column
         prop="createTime"
         header-align="center"
         align="center"
-        label="创建时间">
+        label="报名时间">
       </el-table-column>
+
       <el-table-column
         fixed="right"
         header-align="center"
@@ -101,13 +119,11 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button  v-if="isAuth('zsgl:wdzs:info')" type="text" size="small" @click="detailHandle(scope.row.id)">查看 </el-button>
-          <el-button v-if="isAuth('zsgl:wdzs:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.id,scope,row,ztm)">修改</el-button>
-          <el-button v-if="isAuth('zsgl:wdzs:delete')" type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
+          <el-button v-if="isAuth('ksbm:ksbmxxb:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
+          <el-button v-if="isAuth('ksbm:ksbmxxb:delete')" type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-
     <el-pagination
       @size-change="sizeChangeHandle"
       @current-change="currentChangeHandle"
@@ -119,19 +135,18 @@
     </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
-    <detail v-if="detailVisible" ref="detail" @refreshDataList="getDataList"></detail>
     <zszp v-if="zszpVisible" ref="zszp" @refreshDataList="getDataList"></zszp>
   </div>
 </template>
+
 <script>
-  import AddOrUpdate from './wdzs-add-or-update'
-  import Detail from './wdzs-detail.vue'
-  import Zszp from './wdzs-zszp.vue'
+  import AddOrUpdate from './ksbmxxb-add-or-update'
+  import Zszp from './ksbmxxb-zszp.vue'
   export default {
     data () {
       return {
         dataForm: {
-//          key: ''
+          ksnd: ''
         },
         dataList: [],
         pageIndex: 1,
@@ -140,30 +155,28 @@
         dataListLoading: false,
         dataListSelections: [],
         addOrUpdateVisible: false,
-        detailVisible: false,
         zszpVisible: false
       }
     },
+
     components: {
       AddOrUpdate,
-      Detail,
       Zszp
     },
     activated () {
       this.getDataList()
     },
     methods: {
-
       // 获取数据列表
       getDataList () {
-
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/zsgl/wdzs/list'),
+          url: this.$http.adornUrl('/ksbm/ksbmxxb/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,
-            'limit': this.pageSize
+            'limit': this.pageSize,
+            'key': this.dataForm.key
           })
         }).then(({data}) => {
           if (data && data.code === 0) {
@@ -174,6 +187,13 @@
             this.totalPage = 0
           }
           this.dataListLoading = false
+        })
+      },
+      //查看照片
+      zszpHandle (id) {
+        this.zszpVisible = true
+        this.$nextTick(() => {
+          this.$refs.zszp.init(id)
         })
       },
       // 每页数
@@ -191,36 +211,12 @@
       selectionChangeHandle (val) {
         this.dataListSelections = val
       },
-        //查看照片
-        zszpHandle (id) {
-          this.zszpVisible = true
-          this.$nextTick(() => {
-            this.$refs.zszp.init(id)
-          })
-        },
-      //查看
-      detailHandle (id) {
-          this.detailVisible = true
-          this.$nextTick(() => {
-            this.$refs.detail.init(id)
-          })
-      },
       // 新增 / 修改
-      addOrUpdateHandle (id, ztm) {
-        if(ztm<=1) {
-          this.addOrUpdateVisible = true
-          this.$nextTick(() => {
-            this.$refs.addOrUpdate.init(id)
-          })
-        }else{
-          this.$message({
-            message: '该状态不可修改'
-/*
-            type: 'success',
-            duration: 1500
-*/
-          })
-        }
+      addOrUpdateHandle (id) {
+        this.addOrUpdateVisible = true
+        this.$nextTick(() => {
+          this.$refs.addOrUpdate.init(id)
+        })
       },
       // 删除
       deleteHandle (id) {
@@ -233,7 +229,7 @@
           type: 'warning'
         }).then(() => {
           this.$http({
-            url: this.$http.adornUrl('/zsgl/wdzs/delete'),
+            url: this.$http.adornUrl('/ksbm/ksbmxxb/delete'),
             method: 'post',
             data: this.$http.adornData(ids, false)
           }).then(({data}) => {
