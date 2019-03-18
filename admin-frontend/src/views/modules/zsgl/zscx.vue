@@ -188,7 +188,7 @@
         dataForm: {
           sznd: '',
           szbj: '',
-          ztm: ''
+          xsxh: ''
         },
         dataList: [],
         pageIndex: 1,

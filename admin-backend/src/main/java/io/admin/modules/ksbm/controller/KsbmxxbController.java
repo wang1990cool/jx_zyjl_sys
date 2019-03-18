@@ -41,6 +41,7 @@ public class KsbmxxbController {
     @RequestMapping("/list")
     @RequiresPermissions("ksbm:ksbmxxb:list")
     public R list(@RequestParam Map<String, Object> params){
+        params.put("xsxh",getUserEntity().getUsername());
         PageUtils page = ksbmxxbService.queryPage(params);
 
         return R.ok().put("page", page);
