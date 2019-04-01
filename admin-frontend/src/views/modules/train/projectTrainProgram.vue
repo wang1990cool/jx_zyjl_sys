@@ -1,9 +1,9 @@
 <template>
   <div class="mod-config">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
-      <el-form-item>
-        <el-input v-model="dataForm.projectId" placeholder="项目编号" clearable></el-input>
-      </el-form-item>
+      <!--<el-form-item>-->
+        <!--<el-input v-model="dataForm.projectId" placeholder="项目编号" clearable></el-input>-->
+      <!--</el-form-item>-->
 
       <el-form-item>
         <el-input v-model="dataForm.projectName" placeholder="项目名称" clearable></el-input>
@@ -31,7 +31,7 @@
         header-align="center"
         align="center"
         width="50">
-      </el-table-column>ß
+      </el-table-column>
 
       <!--<el-table-column-->
         <!--prop="id"-->
@@ -40,12 +40,12 @@
         <!--label="ID">-->
       <!--</el-table-column>-->
 
-      <el-table-column
-        prop="projectId"
-        header-align="center"
-        align="center"
-        label="项目编号">
-      </el-table-column>
+      <!--<el-table-column-->
+        <!--prop="projectId"-->
+        <!--header-align="center"-->
+        <!--align="center"-->
+        <!--label="项目编号">-->
+      <!--</el-table-column>-->
       <el-table-column
         prop="projectName"
         header-align="center"
@@ -189,7 +189,7 @@
             'page': this.pageIndex,
             'limit': this.pageSize,
             'order': this.order,
-            'projectId': this.dataForm.projectId,
+            // 'projectId': this.dataForm.projectId,
             'projectName': this.dataForm.projectName
           })
         }).then(({data}) => {

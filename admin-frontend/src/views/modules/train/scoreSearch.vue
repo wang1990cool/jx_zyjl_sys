@@ -6,26 +6,12 @@
       </el-form-item>
 
       <el-form-item>
-        <el-input v-model="dataForm.studentNum" placeholder="学号" clearable></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-input v-model="dataForm.studentName" placeholder="学生姓名" clearable></el-input>
-      </el-form-item>
-      <el-form-item>
         <el-input v-model="dataForm.courseName" placeholder="课程名" clearable></el-input>
       </el-form-item>
 
       <el-form-item>
         <el-button @click="getDataList()" icon="el-icon-zoom-in" type="primary" plain >查询</el-button>
         <el-button @click="getDataAllList()" icon="el-icon-zoom-out" type="primary" plain >取消</el-button>
-      </el-form-item>
-    </el-form>
-
-    <el-form >
-      <el-form-item style="margin-bottom: 5px">
-        <el-button v-if="isAuth('train:score:save')" size="small" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button size="small" type="primary" @click="importHandle()">导入</el-button>
-        <el-button v-if="isAuth('train:score:delete')" size="small" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
 
@@ -103,17 +89,6 @@
         <!--align="center"-->
         <!--label="">-->
       <!--</el-table-column>-->
-      <el-table-column
-        fixed="right"
-        header-align="center"
-        align="center"
-        width="150"
-        label="操作">
-        <template slot-scope="scope">
-          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
-        </template>
-      </el-table-column>
     </el-table>
     <el-pagination
       @size-change="sizeChangeHandle"
@@ -125,7 +100,7 @@
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
-    <!--<add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>-->
+    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
     <score-import v-if="scoreImportVisible" ref="scoreImport" @refreshDataList="getDataList"></score-import>
   </div>
 </template>
@@ -138,8 +113,6 @@
       return {
         dataForm: {
           year: '',
-          studentNum: '',
-          studentName: '',
           courseName: '',
           order: 'year desc, studentNum asc'
         },
@@ -165,15 +138,13 @@
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/train/score/list'),
+          url: this.$http.adornUrl('/train/scoreSearch/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,
             'limit': this.pageSize,
             'order': this.dataForm.order,
             'year': this.dataForm.year,
-            'studentNum': this.dataForm.studentNum,
-            'studentName': this.dataForm.studentName,
             'courseName': this.dataForm.courseName
           })
         }).then(({data}) => {
@@ -190,9 +161,7 @@
 
       getDataAllList () {
         this.dataForm.year = '';
-        this.dataForm.studentNum = '';
         this.dataForm.studentName = '';
-        this.dataForm.courseName = '';
         this.dataForm.order = 'year desc, studentNum asc'
         this.getDataList();
       },

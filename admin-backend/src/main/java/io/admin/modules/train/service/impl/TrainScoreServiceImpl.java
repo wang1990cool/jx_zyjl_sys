@@ -1,5 +1,7 @@
 package io.admin.modules.train.service.impl;
 
+import io.admin.common.utils.ShiroUtils;
+import io.admin.modules.sys.entity.SysUserEntity;
 import io.admin.modules.train.dao.TrainScoreDao;
 import io.admin.modules.train.entity.TrainScoreEntity;
 import io.admin.modules.train.service.TrainScoreService;
@@ -23,6 +25,7 @@ public class TrainScoreServiceImpl extends ServiceImpl<TrainScoreDao, TrainScore
         String studentName = (String)params.get("studentName");
         String courseName = (String)params.get("courseName");
         String order = (String)params.get("order");
+
 
         Page<TrainScoreEntity> page = this.selectPage(
                 new Query<TrainScoreEntity>(params).getPage(),

@@ -6,9 +6,9 @@
 
     <el-form :model="dataForm" :rules="dataRule" size="mini" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="130px">
 
-        <el-form-item label="培训编号" prop="projectId" :disabled="isDetail">
-          <el-input v-model="dataForm.projectId" placeholder="项目编号" ></el-input>
-        </el-form-item>
+        <!--<el-form-item label="培训编号" prop="projectId" :disabled="isDetail">-->
+          <!--<el-input v-model="dataForm.projectId" placeholder="项目编号" ></el-input>-->
+        <!--</el-form-item>-->
 
         <el-form-item label="培训名称" prop="projectName">
           <el-input v-model="dataForm.projectName" placeholder="项目名称"></el-input>
@@ -76,23 +76,23 @@
 <script>
   export default {
     data () {
-      let projectIdRule =  (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('培训编号不能为空'))
-        } else {
-          this.$http({
-            url: this.$http.adornUrl(`/train/project/checkProjectIdIsExists/${value}`),
-            method: 'get',
-            params: this.$http.adornParams()
-          }).then(({data}) => {
-              if (data && data.code !== 0) {
-                 callback(new Error('培训编号已存在'));
-              } else {
-                callback();
-              }
-          })
-        }
-      };
+      // let projectIdRule =  (rule, value, callback) => {
+      //   if (value === '') {
+      //     callback(new Error('培训编号不能为空'))
+      //   } else {
+      //     this.$http({
+      //       url: this.$http.adornUrl(`/train/project/checkProjectIdIsExists/${value}`),
+      //       method: 'get',
+      //       params: this.$http.adornParams()
+      //     }).then(({data}) => {
+      //         if (data && data.code !== 0) {
+      //            callback(new Error('培训编号已存在'));
+      //         } else {
+      //           callback();
+      //         }
+      //     })
+      //   }
+      // };
 
       let projectBudgetRule = (rule, value, callback) => {
         let regExp = /^\d+(\.\d+)?$/;
@@ -128,9 +128,9 @@
           trainRequire: ''
         },
         dataRule: {
-          projectId: [
-            { required: true, validator: projectIdRule, trigger: 'blur' }
-          ],
+          // projectId: [
+          //   { required: true, validator: projectIdRule, trigger: 'blur' }
+          // ],
           projectName: [
             { required: true, message: '培训名称不能为空', trigger: 'blur' }
           ],
@@ -159,7 +159,7 @@
               params: this.$http.adornParams()
             }).then(({data}) => {
               if (data && data.code === 0) {
-                this.dataForm.projectId = data.trainProject.projectId
+                // this.dataForm.projectId = data.trainProject.projectId
                 this.dataForm.projectName = data.trainProject.projectName
                 this.dataForm.projectBudget = data.trainProject.projectBudget
                 this.dataForm.trainingPlan = data.trainProject.trainingPlan
@@ -190,7 +190,7 @@
               method: 'post',
               data: this.$http.adornData({
                 'id': this.dataForm.id || undefined,
-                'projectId': this.dataForm.projectId,
+                // 'projectId': this.dataForm.projectId,
                 'projectName': this.dataForm.projectName,
                 'projectBudget': this.dataForm.projectBudget,
                 'trainingPlan': this.dataForm.trainingPlan,

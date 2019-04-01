@@ -8,10 +8,10 @@
       :before-upload="beforeUpload"
       :auto-upload="false"
       :file-list="fileList"
-      limit
+      limit=1
     >
       <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-      <div class="el-upload__tip" slot="tip">只能上传xls/xlsx文件</div>
+      <div class="el-upload__tip" slot="tip">请先下载模板，按照模板字段进行填写！</div>
     </el-upload>
 
     <div class="download-template"  style="margin-left:50px">
@@ -58,13 +58,13 @@
       },
       // 上传成功后的回调
       uploadSuccess (response) {
-        let code = response.returncode;
-        let msg = response.msg;
-        this.open(msg, code);
+        let code = response.returncode
+        let msg = response.msg
+        this.open(msg, code)
       },
       // 上传错误
       uploadError (response) {
-        this.open('500', '文件导入异常！');
+        this.open('500', '文件导入异常！')
       },
 
       // 提示信息
@@ -77,10 +77,10 @@
         }
       },
 
-      beforeUpload(file){
+      beforeUpload (file) {
         // this.importHeaders.cityCode='上海'//可以配置请求头
-        let excelFileExtend = '.xls,.xlsx'; // 设置文件格式
-        let fileExtend = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+        let excelFileExtend = '.xls,.xlsx' // 设置文件格式
+        let fileExtend = file.name.substring(file.name.lastIndexOf('.')).toLowerCase()
         if (excelFileExtend.indexOf(fileExtend) <= -1) {
           this.$message.error('文件格式错误')
           return false
@@ -89,10 +89,17 @@
         this.processing = true
       },
 
-      submitUpload () {
-        this.dialogVisible = false;
+      getList () {
         this.$emit('refreshDataList')
-        this.$refs.upload.submit();
+      },
+
+      submitUpload () {
+        var me = this;
+        me.dialogVisible = false
+        me.$refs.upload.submit()
+        var t = setTimeout(function () {
+          me.$emit('refreshDataList')
+        }, 1000)
       },
 
       // 下载模板
@@ -108,23 +115,23 @@
         this.$http({
           url: this.$http.adornUrl(`/train/score/download?token=${this.$cookie.get('token')}`),
           method: 'post',
-          responseType:'blob'
+          responseType: 'blob'
         }).then(({data}) => {
-            if (data) {
-              console.log('文件下载成功')
-              let blob = new Blob([data], {
-                type: 'application/vnd.ms-excel'
-              });
-              let objectUrl = URL.createObjectURL(blob);
-              console.log(objectUrl);
-              let downEle = document.createElement("a");
-              let fname = 'template.xls'; //下载文件的名字
-              downEle.href = objectUrl;
-              downEle.setAttribute("download", fname);
-              document.body.appendChild(downEle);
-              downEle.click();
-            }
-          })
+          if (data) {
+            console.log('文件下载成功')
+            let blob = new Blob([data], {
+              type: 'application/vnd.ms-excel'
+            })
+            let objectUrl = URL.createObjectURL(blob)
+            console.log(objectUrl)
+            let downEle = document.createElement('a')
+            let fname = 'template.xls' // 下载文件的名字
+            downEle.href = objectUrl
+            downEle.setAttribute('download', fname)
+            document.body.appendChild(downEle)
+            downEle.click()
+          }
+        })
       }
     }
   }

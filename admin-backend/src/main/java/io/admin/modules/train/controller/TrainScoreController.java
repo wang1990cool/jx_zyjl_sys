@@ -59,21 +59,6 @@ public class TrainScoreController {
         return R.ok().put("page", page);
     }
 
-    /**
-     * 列表
-     */
-    @RequestMapping("/myList")
-    @RequiresPermissions("train:score:myList")
-    public R myList(@RequestParam Map<String, Object> params) {
-        SysUserEntity sysUserEntity = ShiroUtils.getUserEntity();
-        params.put("studentNum", sysUserEntity.getUserId());
-
-        PageUtils page = trainScoreService.queryPage(params);
-
-
-        return R.ok().put("page", page);
-    }
-
 
     /**
      * 信息
@@ -130,26 +115,30 @@ public class TrainScoreController {
 
         InputStream is = file.getInputStream();
         Workbook wb = null;
-        if (isExcel2003) {
-            wb = new HSSFWorkbook(is);
-        } else {
+//        if (isExcel2003) {
+//            wb = new HSSFWorkbook(is);
+//        } else {
             wb = new XSSFWorkbook(is);
-        }
+//        }
 
         Sheet sheet = wb.getSheetAt(0);
 
-        TrainScoreEntity trainScoreEntity = new TrainScoreEntity();
+
 
         int totalRows = sheet.getPhysicalNumberOfRows();
         int totalCells = 0;
         if (totalRows >= 1 && sheet.getRow(0) != null) {
             totalCells = sheet.getRow(0).getPhysicalNumberOfCells();
         }
+        List<TrainScoreEntity> trainScoreEntities = new ArrayList<TrainScoreEntity>();
         for (int i = 1; i < sheet.getLastRowNum() + 1; i++) {
+            TrainScoreEntity trainScoreEntity = new TrainScoreEntity();
             Row row = sheet.getRow(i);
             row.getCell(0).setCellType(Cell.CELL_TYPE_STRING);
             String year = row.getCell(0).getStringCellValue();
+            row.getCell(1).setCellType(Cell.CELL_TYPE_STRING);
             String studentNum = row.getCell(1).getStringCellValue();
+            row.getCell(3).setCellType(Cell.CELL_TYPE_STRING);
             String courseNum = row.getCell(3).getStringCellValue();
             List<TrainScoreEntity> entityList = trainScoreService.selectList(new EntityWrapper<TrainScoreEntity>().
                     eq("year", year).
@@ -313,7 +302,7 @@ public class TrainScoreController {
         try {
             String filename = "成绩模板.xls";
 
-            File file = ResourceUtils.getFile("classpath:template/scoreTemplate.xls");
+            File file = ResourceUtils.getFile("classpath:template/scoreTemplate.xlsx");
             response.setContentType("application/vnd.ms-excel");
             response.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
             response.addHeader("charset", "utf-8");

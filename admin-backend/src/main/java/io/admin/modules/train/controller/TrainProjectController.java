@@ -1,7 +1,9 @@
 package io.admin.modules.train.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -70,6 +72,7 @@ public class TrainProjectController {
         trainProject.setCreateUserId(sysUserEntity.getCreateUserId());
         trainProject.setCreateTime(new Date());
 
+        trainProject.setProjectId(this.getProjectId());
 
 		trainProjectService.insert(trainProject);
 
@@ -128,6 +131,49 @@ public class TrainProjectController {
             return R.error("项目编号已存在！");
         }else {
             return R.ok();
+        }
+    }
+
+    public String getProjectId() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String date = sdf.format(new Date());
+        List<TrainProjectEntity> list = trainProjectService.selectList(
+                new EntityWrapper<TrainProjectEntity>().
+                    like("project_id", date)
+        );
+
+        String [] array = new String[list.size()];
+        if(list.size() > 0){
+            for(int i = 0;i < list.size(); i++){
+                array[i] = list.get(i).getProjectId();
+            }
+        }
+        return date + "_" + this.createSerialNum(array, 3);
+    }
+
+    /**
+     * 获得下一个流水号
+     * @param array
+     * @param len
+     * @return
+     */
+    public String createSerialNum(String[] array, int len){
+        int maxNum = 1; //初始化最大值为1
+        String SerialNum;
+        if(array.length > 0){
+            for(int i = 0; i < array.length ; i++){
+                String num = array[i];
+                String previousSerialNum = num.substring(num.length() - len); //获得培养方案号号后3位
+                int newNum = Integer.parseInt(previousSerialNum.replaceAll("^(0+)", ""));// 去掉前面的0
+                if(newNum > maxNum){
+                    maxNum = newNum;
+                }
+            }
+            SerialNum = String.format("%0" + len + "d", (maxNum + 1)); // 数值前面加0，保存为len位
+            return SerialNum;
+        }else{
+            SerialNum = String.format("%0" + len + "d",  1);
+            return  SerialNum;
         }
     }
 
