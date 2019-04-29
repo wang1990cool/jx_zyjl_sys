@@ -68,6 +68,7 @@
       this.getCaptcha()
     },
     methods: {
+
       // 提交表单
       dataFormSubmit () {
         this.$refs['dataForm'].validate((valid) => {

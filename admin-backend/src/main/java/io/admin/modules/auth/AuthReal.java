@@ -3,6 +3,10 @@ package io.admin.modules.auth;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.admin.common.utils.R;
+import io.admin.modules.sys.entity.SysUserEntity;
+import io.admin.modules.sys.service.SysUserService;
+import io.admin.modules.sys.service.SysUserTokenService;
 import org.apache.oltu.oauth2.client.OAuthClient;
 import org.apache.oltu.oauth2.client.URLConnectionClient;
 import org.apache.oltu.oauth2.client.request.OAuthBearerClientRequest;
@@ -13,16 +17,24 @@ import org.apache.oltu.oauth2.common.OAuth;
 import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.types.GrantType;
+import org.apache.shiro.crypto.hash.Sha256Hash;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/callback")
 public class AuthReal {
+
+    @Autowired
+    private SysUserService sysUserService;
+    @Autowired
+    private SysUserTokenService sysUserTokenService;
 
 /*
     //服务器ip
@@ -38,7 +50,7 @@ public class AuthReal {
 */
 
     //服务器ip
-    String ip = "http://172.17.1.48:8080";
+    String ip = "http://172.17.1.48:80";
     //oauth clientId
     String clientId = "5cb7d6f774292964d41af700.abc";
     // oauth clientSecret
@@ -81,7 +93,7 @@ public class AuthReal {
         return "redirect:"+redirectUrl;
     }
     @RequestMapping("/callbackCode")
-    public Object toLogin(HttpServletRequest request)throws Exception {
+    public Map<String, Object> toLogin(HttpServletRequest request)throws Exception {
         System.out.println("-----------客户端/callbackCode--------------------------------------------------------------------------------");
         HttpServletRequest httpRequest = (HttpServletRequest)request;
         code = httpRequest.getParameter("code");
@@ -114,7 +126,7 @@ public class AuthReal {
     }
 
     @RequestMapping("/accessToken")
-    public String accessToken(String accessToken) throws Exception{
+    public Map<String, Object> accessToken(String accessToken) throws Exception{
         OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
         try {
             System.out.println("-------获取Token----------------------------------------------------------------------------------");
@@ -128,16 +140,26 @@ public class AuthReal {
             JsonObject jo = jp.parse(username).getAsJsonObject();
             String uid = jo.get("uid").getAsString();
             String name = jo.get("name").getAsString();
+            //sid学号或工号
             String sid = jo.get("profiles").getAsJsonObject().get("id").getAsString();
 
-            System.out.println(sid);
-            System.out.println("uid：" + uid);
-            System.out.println("name：" + name);
+            SysUserEntity user = sysUserService.queryByUserName(sid);
+            //账号不存在、密码错误
+            if(user == null ) {
+                return R.error("账号或密码不正确");
+            }
 
+            //账号锁定
+            if(user.getStatus() == 0){
+                return R.error("账号已被锁定,请联系管理员");
+            }
+
+            //生成token，并保存到数据库
+            R r = sysUserTokenService.createToken(user.getUserId());
 
             // 获取返回信息
             //返回 调用登录方法
-            return username;  //调用方法 loginconn.login(sid);
+            return r;  //调用方法 loginconn.login(sid);
         } catch (OAuthSystemException e) {
             e.printStackTrace();
         } catch (OAuthProblemException e) {
@@ -145,5 +167,8 @@ public class AuthReal {
         }
         return null;
     }
+
+
+
 
 }
