@@ -70,7 +70,7 @@
     methods: {
       authLogin () {
             this.$http({
-              url: this.$http.adornUrl('/callback/accessToken'),
+              url: this.$http.adornUrl('/callback/callbackCode'),
               method: 'post',
               data: this.$http.adornData({
 

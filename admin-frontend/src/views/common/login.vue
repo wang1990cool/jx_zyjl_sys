@@ -66,8 +66,28 @@
     },
     created () {
       this.getCaptcha()
+      this.authLogin()
     },
     methods: {
+
+      authLogin () {
+        this.$http({
+          url: this.$http.adornUrl('/callback/callbackCode'),
+          method: 'post',
+          data: this.$http.adornData({
+
+          })
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.$cookie.set('token', data.token)
+            this.$router.replace({ name: 'home' })
+/*
+          } else {
+            this.$router.replace({ name: 'login' })
+*/
+          }
+        })
+      },
 
       // 提交表单
       dataFormSubmit () {

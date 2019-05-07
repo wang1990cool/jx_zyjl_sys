@@ -125,7 +125,7 @@
   import AddOrUpdate from './bjsh-add-or-update'
   import Zszp from './wdzs-zszp.vue'
   export default {
-    data () {
+      data () {
       return {
         dataForm: {
 //          key: ''
