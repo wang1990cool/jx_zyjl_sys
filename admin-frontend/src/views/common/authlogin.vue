@@ -69,6 +69,8 @@
     },
     methods: {
       authLogin () {
+        this.$router.replace({ name: 'home' })
+/*
             this.$http({
               url: this.$http.adornUrl('/callback/callbackCode'),
               method: 'post',
@@ -83,6 +85,7 @@
                 this.$router.replace({ name: 'login' })
               }
             })
+*/
       },
       // 提交表单
       dataFormSubmit () {

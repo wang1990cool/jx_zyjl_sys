@@ -1,6 +1,7 @@
 package io.admin.modules.auth.controller;
 
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.admin.common.utils.R;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -50,14 +52,14 @@ public class AuthReal {
 */
 
     //服务器ip
-//    String ip = "http://127.0.0.1:80/zyjn";
-    String ip = "http://172.17.1.48:80/zyjn";
+    // String ip = "http://127.0.0.1/zyjn";
+        String ip = "http://172.17.1.48/zyjn";
     //oauth clientId
     String clientId = "5cb7d6f774292964d41af700.abc";
     // oauth clientSecret
     String clientSecret = "m-zrtgOzQAG_4drfb92QigpPLvkWeHNxS589PfIO59E";
 
-    String myscope ="userinfo";
+    String myscope ="all";
     String mystate = "yourstate";
     String TiupURl = "https://i.abc.edu.cn";
 
@@ -77,11 +79,10 @@ public class AuthReal {
 
     // 提交申请code的请求
 
-    @ExceptionHandler
+    @ExceptionHandler(OAuthProblemException.class)
     @RequestMapping( value="/requestServerCode")
-    public String requestServerFirst(HttpServletRequest request, HttpServletResponse response) throws OAuthProblemException {
+    public String requestServerFirst(HttpServletRequest request, HttpServletResponse response) throws OAuthProblemException,IOException {
         response_type = "code";
-        System.out.println("redirectUrl11：：："+response_type);
         OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
         String redirectUrl = null;
         try {
@@ -90,8 +91,8 @@ public class AuthReal {
                     .setResponseType(response_type).setClientId(clientId).setRedirectURI(redirectUrl)
                     .buildQueryMessage();
             redirectUrl = accessTokenRequest.getLocationUri();
-
-            System.out.println("redirectUrl：：："+redirectUrl);
+            response.sendRedirect(codeUrl);
+//            System.out.println("redirectUrl：：："+redirectUrl);
         } catch (OAuthSystemException e) {
             e.printStackTrace();
         }
@@ -99,13 +100,15 @@ public class AuthReal {
     }
 
     @RequestMapping("/callbackCode")
-    public Map<String, Object> toLogin(HttpServletRequest request)throws Exception {
+    public Map<String, Object> toLogin(HttpServletRequest request,HttpServletResponse response)throws Exception {
         System.out.println("-----------客户端/callbackCode--------------------------------------------------------------------------------");
+/*
         System.out.println("accessTokenUrl：：："+accessTokenUrl);
         System.out.println("codeUrl：：："+codeUrl);
+*/
         HttpServletRequest httpRequest = (HttpServletRequest)request;
         code = httpRequest.getParameter("code");
-        System.out.println(code);
+/*        System.out.println(code);*/
         OAuthClient oAuthClient =new OAuthClient(new URLConnectionClient());
         try {
             OAuthClientRequest accessTokenRequest = OAuthClientRequest
@@ -125,9 +128,9 @@ public class AuthReal {
             Long expiresIn =oAuthResponse.getExpiresIn();
 
 
-            System.out.println("客户端/callbackCode方法的token：：："+accessToken);
+//            System.out.println("客户端/callbackCode方法的token：：："+accessToken);
 
-            return accessToken(accessToken);
+            return accessToken(accessToken,response);
         } catch (OAuthSystemException e) {
             e.printStackTrace();
         }
@@ -135,22 +138,30 @@ public class AuthReal {
     }
 
     @RequestMapping("/accessToken")
-    public Map<String, Object> accessToken(String accessToken) throws Exception{
+    public Map<String, Object> accessToken(String accessToken,HttpServletResponse response) throws Exception{
         OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
         try {
             System.out.println("-------获取Token----------------------------------------------------------------------------------");
             OAuthClientRequest userInfoRequest = new OAuthBearerClientRequest(userInfoUrl).setAccessToken(accessToken).buildQueryMessage();
             OAuthResourceResponse resourceResponse = oAuthClient.resource(userInfoRequest, OAuth.HttpMethod.GET,OAuthResourceResponse.class);
             String username = resourceResponse.getBody();
-            System.out.println(1213);
-            System.out.println(username);
+/*            System.out.println(1213);
+            System.out.println(username);*/
             JsonParser jp = new JsonParser();
             //将json字符串转化成json对象
             JsonObject jo = jp.parse(username).getAsJsonObject();
-            String uid = jo.get("uid").getAsString();
-            String name = jo.get("name").getAsString();
+
             //sid学号或工号
-            String sid = jo.get("profiles").getAsJsonObject().get("id").getAsString();
+            String sid="";
+            JsonArray profilesjson=jo.get("profiles").getAsJsonArray();
+            for(int i =0;i<profilesjson.size();i++){
+                JsonObject job = profilesjson.get(i).getAsJsonObject();
+                if(job.get("isprimary").getAsBoolean()){
+                    sid=job.get("stno").getAsString();
+                    System.out.println("stno=" + sid);
+                    break;
+                }
+            }
 
             SysUserEntity user = sysUserService.queryByUserName(sid);
             //账号不存在、密码错误
@@ -165,6 +176,8 @@ public class AuthReal {
 
             //生成token，并保存到数据库
             R r = sysUserTokenService.createToken(user.getUserId());
+
+            response.sendRedirect("http://172.17.1.48/zyjn/static/index.html#/home");
             // 获取返回信息
             //返回 调用登录方法
             return r;  //调用方法 loginconn.login(sid);
@@ -188,8 +201,8 @@ public class AuthReal {
                     .setResponseType(response_type).setClientId(clientId).setRedirectURI(redirectUrl)
                     .buildQueryMessage();
             redirectUrl = accessTokenRequest.getLocationUri();
-            response.sendRedirect(redirectUrl);
-            System.out.println("redirectUrl：：："+redirectUrl);
+            response.sendRedirect("http://172.17.1.48/zyjn/static/index.html#/home");
+//            System.out.println("redirectUrl：：："+redirectUrl);
         } catch (OAuthSystemException e) {
             e.printStackTrace();
         }
