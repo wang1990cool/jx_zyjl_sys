@@ -302,7 +302,7 @@ public class TrainScoreController {
         try {
             String filename = "成绩模板.xls";
 
-            File file = ResourceUtils.getFile("classpath:template/scoreTemplate.xlsx");
+            File file = ResourceUtils.getFile("classpath:template/scoreTemplate.xls");
             response.setContentType("application/vnd.ms-excel");
             response.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
             response.addHeader("charset", "utf-8");
