@@ -40,7 +40,7 @@
 </template>
 
 <script>
-  import { getUUID } from '@/utils'
+//  import { getUUID } from '@/utils'
   export default {
     data () {
       return {
@@ -69,13 +69,18 @@
     },
     methods: {
       authLogin () {
-        this.$router.replace({ name: 'home' })
-/*
+//        this.$router.replace({ name: 'home' })
+          let sid = this.$route.query.sid
+        this.$message({
+          message: sid,
+          type: 'success',
+          duration: 1500
+        })
             this.$http({
-              url: this.$http.adornUrl('/callback/callbackCode'),
-              method: 'post',
+              url: this.$http.adornUrl('/callback/auth?sid=' + sid),
+              method: 'get',
               data: this.$http.adornData({
-
+//                'sid': sid
               })
             }).then(({data}) => {
               if (data && data.code === 0) {
@@ -85,37 +90,6 @@
                 this.$router.replace({ name: 'login' })
               }
             })
-*/
-      },
-      // 提交表单
-      dataFormSubmit () {
-        this.$refs['dataForm'].validate((valid) => {
-          if (valid) {
-            this.$http({
-              url: this.$http.adornUrl('/sys/login'),
-              method: 'post',
-              data: this.$http.adornData({
-                'username': this.dataForm.userName,
-                'password': this.dataForm.password,
-                'uuid': this.dataForm.uuid,
-                'captcha': this.dataForm.captcha
-              })
-            }).then(({data}) => {
-              if (data && data.code === 0) {
-                this.$cookie.set('token', data.token)
-                this.$router.replace({ name: 'home' })
-              } else {
-                this.getCaptcha()
-                this.$message.error(data.msg)
-              }
-            })
-          }
-        })
-      },
-      // 获取验证码
-      getCaptcha () {
-        this.dataForm.uuid = getUUID()
-        this.captchaPath = this.$http.adornUrl(`/captcha.jpg?uuid=${this.dataForm.uuid}`)
       }
     }
   }

@@ -22,6 +22,7 @@ import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -163,24 +164,10 @@ public class AuthReal {
                 }
             }
 
-            SysUserEntity user = sysUserService.queryByUserName(sid);
-            //账号不存在、密码错误
-            if(user == null ) {
-                return R.error("账号或密码不正确");
-            }
-
-            //账号锁定
-            if(user.getStatus() == 0){
-                return R.error("账号已被锁定,请联系管理员");
-            }
-
-            //生成token，并保存到数据库
-            R r = sysUserTokenService.createToken(user.getUserId());
-
-            response.sendRedirect("http://172.17.1.48/zyjn/static/index.html#/home");
+            response.sendRedirect("http://172.17.1.48/zyjn/static/index.html#/authlogin?sid="+sid);
             // 获取返回信息
             //返回 调用登录方法
-            return r;  //调用方法 loginconn.login(sid);
+//            return r;  //调用方法 loginconn.login(sid);
         } catch (OAuthSystemException e) {
             e.printStackTrace();
         } catch (OAuthProblemException e) {
@@ -189,24 +176,22 @@ public class AuthReal {
         return null;
     }
 
-    @RequestMapping( value="/oauth")
-    public String oauth(HttpServletRequest request, HttpServletResponse response) throws OAuthProblemException,Exception {
-        response_type = "code";
+    @RequestMapping( value="/auth")
+    public R oauth(@RequestParam("sid") String sid ) throws OAuthProblemException,Exception {
 
-        OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
-        String redirectUrl = null;
-        try {
-            // 构建oauthd的请求。设置请求服务地址（accessTokenUrl）、clientId、response_type、redirectUrl
-            OAuthClientRequest accessTokenRequest = OAuthClientRequest.authorizationLocation(codeUrl)
-                    .setResponseType(response_type).setClientId(clientId).setRedirectURI(redirectUrl)
-                    .buildQueryMessage();
-            redirectUrl = accessTokenRequest.getLocationUri();
-            response.sendRedirect("http://172.17.1.48/zyjn/static/index.html#/home");
-//            System.out.println("redirectUrl：：："+redirectUrl);
-        } catch (OAuthSystemException e) {
-            e.printStackTrace();
+        SysUserEntity user = sysUserService.queryByUserName(sid);
+        //账号不存在、密码错误
+        if(user == null ) {
+            return R.error("账号或密码不正确");
         }
-        return "redirect:"+redirectUrl;
+
+        //账号锁定
+        if(user.getStatus() == 0){
+            return R.error("账号已被锁定,请联系管理员");
+        }
+        //生成token，并保存到数据库
+        R r = sysUserTokenService.createToken(user.getUserId());
+        return r;  //调用方法 loginconn.login(sid);
     }
 
 
