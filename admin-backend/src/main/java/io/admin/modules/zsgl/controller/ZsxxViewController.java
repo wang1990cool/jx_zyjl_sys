@@ -1,28 +1,23 @@
 package io.admin.modules.zsgl.controller;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import io.admin.modules.zsgl.entity.XsZsxxbEntity;
+import io.admin.modules.zsgl.service.XsZsxxbService;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.jeecgframework.poi.excel.ExcelExportUtil;
-import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import io.admin.modules.zsgl.entity.XsZsxxbEntity;
-import io.admin.modules.zsgl.service.XsZsxxbService;
+import io.admin.modules.zsgl.entity.ZsxxViewEntity;
+import io.admin.modules.zsgl.service.ZsxxViewService;
 import io.admin.common.utils.PageUtils;
 import io.admin.common.utils.R;
 
@@ -30,15 +25,18 @@ import javax.servlet.http.HttpServletResponse;
 
 
 /**
- * 学生证书信息表
+ * VIEW
  *
  * @author chenshun
  * @email sunlightcs@gmail.com
- * @date 2018-12-27 10:14:57
+ * @date 2019-05-14 21:51:59
  */
 @RestController
-@RequestMapping("zsgl/zsdc")
-public class XsZsxxbController {
+@RequestMapping("zsgl/zscx")
+public class ZsxxViewController {
+    @Autowired
+    private ZsxxViewService zsxxViewService;
+
     @Autowired
     private XsZsxxbService xsZsxxbService;
 
@@ -48,43 +46,9 @@ public class XsZsxxbController {
     @RequestMapping("/list")
     @RequiresPermissions("zsgl:zscx:list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = xsZsxxbService.queryPage(params);
+        PageUtils page = zsxxViewService.queryPage(params);
 
         return R.ok().put("page", page);
-    }
-
-    @RequestMapping("/info/{id}")
-    @RequiresPermissions("zsgl:zscx:info")
-    public R info(@PathVariable("id") Long id){
-			XsZsxxbEntity xsZsxxb = xsZsxxbService.selectById(id);
-
-        return R.ok().put("xsZsxxb", xsZsxxb);
-    }
-
-
-    @RequestMapping("/save")
-    @RequiresPermissions("zsgl:zscx:save")
-    public R save(@RequestBody XsZsxxbEntity xsZsxxb){
-			xsZsxxbService.insert(xsZsxxb);
-
-        return R.ok();
-    }
-
-    @RequestMapping("/update")
-    @RequiresPermissions("zsgl:zscx:update")
-    public R update(@RequestBody XsZsxxbEntity xsZsxxb){
-			xsZsxxbService.updateById(xsZsxxb);
-
-        return R.ok();
-    }
-
-
-    @RequestMapping("/delete")
-    @RequiresPermissions("zsgl:zscx:delete")
-    public R delete(@RequestBody Long[] ids){
-			xsZsxxbService.deleteBatchIds(Arrays.asList(ids));
-
-        return R.ok();
     }
 
     @RequestMapping(value="/export",method = RequestMethod.POST)
@@ -174,7 +138,7 @@ public class XsZsxxbController {
 */
 
 
-   //xlsx 2007以上版本
+        //xlsx 2007以上版本
         response.setCharacterEncoding("utf-8");
 //        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setContentType("multipart/form-data");
@@ -211,5 +175,6 @@ public class XsZsxxbController {
         response.flushBuffer();
         workbook.write(response.getOutputStream());
     }
+
 
 }
