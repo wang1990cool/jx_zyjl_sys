@@ -116,9 +116,9 @@ public class TrainScoreController {
         InputStream is = file.getInputStream();
         Workbook wb = null;
 //        if (isExcel2003) {
-//            wb = new HSSFWorkbook(is);
+            wb = new HSSFWorkbook(is);
 //        } else {
-            wb = new XSSFWorkbook(is);
+//            wb = new XSSFWorkbook(is);
 //        }
 
         Sheet sheet = wb.getSheetAt(0);
