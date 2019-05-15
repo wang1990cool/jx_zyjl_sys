@@ -5,24 +5,29 @@
         <el-input v-model="dataForm.ksnd" placeholder="年度" clearable></el-input>
       </el-form-item>
       <el-form-item  label="" prop="szxb">
-        <el-select v-model="dataForm.szxb" label="栏目" placeholder="系部"  >
-          <el-option v-for="item in szxbList" :key="item.label" :label="item.label" :value="item.label" >
+        <el-select v-model="dataForm.szxb" label="栏目" placeholder="系部"  @change="selectXymc">
+          <el-option v-for="item in szxbList" :key="item.value" :label="item.label" :value="item.value" >
           </el-option>
         </el-select>
       </el-form-item>
       <el-form-item  label="" prop="szzy">
-        <el-select v-model="dataForm.szzy" label="栏目" placeholder="专业"  >
-          <el-option v-for="item in szzyList" :key="item.label" :label="item.label" :value="item.label" >
+        <el-select v-model="dataForm.szzy" label="栏目" placeholder="专业"  @change="selectZymc">
+          <el-option v-for="item in szzyList" :key="item.value" :label="item.label" :value="item.value" >
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item  label="" prop="sznj">
+        <el-select v-model="dataForm.sznj" label="栏目" placeholder="年级" @change="selectNj">
+          <el-option v-for="item in sznjList" :key="item.label" :label="item.label" :value="item.label" >
           </el-option>
         </el-select>
       </el-form-item>
       <el-form-item  label="" prop="szbj">
         <el-select v-model="dataForm.szbj" label="栏目" placeholder="班级"  >
-          <el-option v-for="item in szbjList" :key="item.label" :label="item.label" :value="item.label" >
+          <el-option v-for="item in szbjList" :key="item.value" :label="item.label" :value="item.value" >
           </el-option>
         </el-select>
       </el-form-item>
-
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
 
@@ -126,18 +131,6 @@
       </el-table-column>
 
 
-<!--
-      <el-table-column
-        fixed="right"
-        header-align="center"
-        align="center"
-        width="150"
-        label="操作">
-        <template slot-scope="scope">
-          <el-button  v-if="isAuth('ksbm:ksbmxxb:info')" type="text" size="small" @click="zszpHandle(scope.row.id)">查看证书 </el-button>
-        </template>
-      </el-table-column>
--->
 
     </el-table>
     <el-pagination
@@ -163,9 +156,23 @@
   export default {
     data () {
       return {
+        szxbList : [],
+        szzyList : [],
+        szbjList : [],
+        sznjList : [{
+          label: '2017'
+        }, {
+          label: '2018'
+        }, {
+          label: '2019'
+        }],
         dataForm: {
           ksnd: '',
-          szbj: ''
+          szxb: '',
+          szzy: '',
+          sznj: '',
+          szbj: '',
+          ztm: ''
         },
         dataList: [],
         pageIndex: 1,
@@ -183,6 +190,7 @@
     },
     activated () {
       this.getDataList()
+      this.getXyxxList()
     },
     methods: {
       //导出数据
@@ -222,7 +230,11 @@
             'page': this.pageIndex,
             'limit': this.pageSize,
             'ksnd': this.dataForm.ksnd,
-            'szbj': this.dataForm.szbj
+            'szxb': this.dataForm.szxb,
+            'szzy': this.dataForm.szzy,
+            'sznj': this.dataForm.sznj,
+            'szbj': this.dataForm.szbj,
+            'ztm' : this.dataForm.ztm
           })
         }).then(({data}) => {
           if (data && data.code === 0) {
@@ -233,6 +245,90 @@
             this.totalPage = 0
           }
           this.dataListLoading = false
+        })
+      },
+      //获取系院信息
+      getXyxxList(){
+        this.$http({
+          url: this.$http.adornUrl('/xyxx/zdxyxxb/selectAll'),
+          method: 'get'
+        }).then(({data}) => {
+          this.szxbList = data.xymclist
+        })
+
+      },
+//选择系院
+      selectXymc( vId ){//这个vId也就是value值
+        let obj = {};
+        obj = this.szxbList.find((item)=> {
+          return item.value == vId;
+        } );
+        var xybm = obj.value
+        this.szzyList = []
+        this.szbjList = []
+        this.dataForm.szzy=""
+        this.dataForm.szbj=""
+        this.getZymc( xybm )
+      },
+
+      //获取专业信息
+      getZymc( xybm ) {
+        this.$http({
+          url: this.$http.adornUrl('/zyxx/zdzyxxb/select'),
+          method: 'get',
+          params: this.$http.adornParams({
+            'xybm': xybm
+          })
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.szzyList = data.zymclist
+          } else {
+            this.szzyList = []
+          }
+
+        })
+      },
+
+      //选择专业
+      selectZymc( vId ){//这个vId也就是value值
+        let obj = {};
+        obj = this.szzyList.find((item)=> {
+          return item.value == vId;
+        } );
+        var zybm = obj.value
+        this.szbjList = []
+        this.dataForm.szbj=""
+        var sznj=this.dataForm.sznj
+        if( sznj ){
+          this.getBjmc( zybm, sznj)
+        }
+      },
+
+      //选择年级
+      selectNj( vId ){//这个vId也就是value值
+        var szzy = this.dataForm.szzy
+        var sznj = this.dataForm.sznj
+        if (szzy){
+          this.dataForm.szbj=""
+          this.getBjmc(szzy, sznj )
+        }
+      },
+      //获取班级信息
+      getBjmc( szzy, sznj  ) {
+        this.$http({
+          url: this.$http.adornUrl('/bjxx/zdbjxxb/select'),
+          method: 'get',
+          params: this.$http.adornParams({
+            'zybm': szzy,
+            'sznj': sznj
+          })
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.szbjList = data.bjmclist
+          } else {
+            this.szbjList = []
+          }
+
         })
       },
       //查看照片

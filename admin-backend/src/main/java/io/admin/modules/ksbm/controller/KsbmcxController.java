@@ -33,7 +33,7 @@ import static io.admin.common.utils.ShiroUtils.getUserEntity;
  * @date 2019-03-17 17:24:19
  */
 @RestController
-@RequestMapping("ksbm/ksbmcx")
+@RequestMapping("ksbm/ksbmcx111")
 public class KsbmcxController {
     @Autowired
     private KsbmxxbService ksbmxxbService;
