@@ -1,5 +1,6 @@
 package io.admin.modules.sys.controller;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import io.admin.common.annotation.SysLog;
 import io.admin.common.base.AbstractController;
 import io.admin.common.utils.Constant;
@@ -11,12 +12,23 @@ import io.admin.modules.sys.entity.SysUserEntity;
 import io.admin.modules.sys.form.PasswordForm;
 import io.admin.modules.sys.service.SysUserRoleService;
 import io.admin.modules.sys.service.SysUserService;
+import io.admin.modules.train.entity.TrainScoreEntity;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.RandomStringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -142,4 +154,64 @@ public class SysUserController extends AbstractController {
 		
 		return R.ok();
 	}
+
+	@PostMapping("/import")
+	@RequiresPermissions("sys:user:import")
+	public R update(@RequestParam MultipartFile file, @RequestParam("roleName") String roleName,
+					@RequestParam("roleId") String roleId) throws Exception {
+		String fileName = file.getOriginalFilename();
+		boolean isExcel2003 = true;
+		if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
+			isExcel2003 = false;
+		}
+
+		InputStream is = file.getInputStream();
+		Workbook wb = null;
+        if (isExcel2003) {
+            wb = new HSSFWorkbook(is);
+        } else {
+			wb = new XSSFWorkbook(is);
+        }
+
+		Sheet sheet = wb.getSheetAt(0);
+
+		for (int i = 1; i < sheet.getLastRowNum() + 1; i++) {
+			SysUserEntity  user = new SysUserEntity();
+			Row row = sheet.getRow(i);
+
+			String username = row.getCell(0).getStringCellValue();
+			String usercname = row.getCell(1).getStringCellValue();
+			String password = username;
+
+			String unit = null;
+			if (row.getCell(2) != null){
+				 unit = row.getCell(2).getStringCellValue();
+			}
+
+			List<Long> roleIdList = new ArrayList<>();
+			roleIdList.add(Long.parseLong(roleId));
+
+			user.setUsername(username);
+			user.setUsercname(usercname);
+			user.setPassword(password);
+			user.setUnit(unit);
+			user.setCreateUserId(getUserId());
+			user.setRoleIdList(roleIdList);
+			user.setStatus(1);
+//			user.setRoleName(roleName);
+
+			List<SysUserEntity> entityList = sysUserService.selectList(new EntityWrapper<SysUserEntity>().
+					eq("username", username));
+
+			if (entityList.size() > 0) {
+				sysUserService.update(entityList.get(0));
+			} else {
+				sysUserService.save(user);
+			}
+
+		}
+
+		return R.ok();
+	}
+
 }

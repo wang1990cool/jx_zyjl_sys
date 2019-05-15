@@ -8,6 +8,7 @@
         <el-button @click="getDataList()">查询</el-button>
         <el-button v-if="isAuth('sys:user:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
         <el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button v-if="isAuth('sys:user:import')" type="primary" @click="importHandle()">用户导入</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -98,12 +99,15 @@
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
+    <user-import v-if="userImportVisible" ref="userImport" @refreshDataList="getDataList"></user-import>
+
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
   </div>
 </template>
 
 <script>
   import AddOrUpdate from './user-add-or-update'
+  import UserImport from './user-import'
   export default {
     data () {
       return {
@@ -116,11 +120,13 @@
         totalPage: 0,
         dataListLoading: false,
         dataListSelections: [],
-        addOrUpdateVisible: false
+        addOrUpdateVisible: false,
+        userImportVisible: false
       }
     },
     components: {
-      AddOrUpdate
+      AddOrUpdate,
+      UserImport
     },
     activated () {
       this.getDataList()
@@ -199,6 +205,12 @@
             }
           })
         }).catch(() => {})
+      },
+      importHandle () {
+        this.userImportVisible = true
+        this.$nextTick(() => {
+          this.$refs.userImport.init()
+        })
       }
     }
   }

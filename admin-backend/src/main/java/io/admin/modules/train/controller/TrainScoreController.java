@@ -296,7 +296,7 @@ public class TrainScoreController {
 //    }
 
     @RequestMapping(value = "/download")
-    public R download(HttpServletResponse response, HttpServletRequest request) {
+    public void download(HttpServletResponse response, HttpServletRequest request) {
         InputStream inputStream = null;
         ServletOutputStream servletOutputStream = null;
         try {
@@ -330,7 +330,7 @@ public class TrainScoreController {
                 e.printStackTrace();
             }
         }
-        return R.ok();
+//        return R.ok();
     }
 
 //    //文件下载
