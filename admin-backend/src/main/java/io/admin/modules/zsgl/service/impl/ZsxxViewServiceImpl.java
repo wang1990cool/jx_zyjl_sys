@@ -34,11 +34,11 @@ public class ZsxxViewServiceImpl extends ServiceImpl<ZsxxViewDao, ZsxxViewEntity
         Page<ZsxxViewEntity> page = this.selectPage(
                 new Query<ZsxxViewEntity>(params).getPage(),
                 new EntityWrapper<ZsxxViewEntity>().
-                        like(StringUtils.isNotBlank(szxb), "xymc", szxb).
-                        like(StringUtils.isNotBlank(szzy), "zymc", szzy).
                         like(StringUtils.isNotBlank(hzrq), "hzrq", hzrq).
+                        like(StringUtils.isNotBlank(szxb), "xydm", szxb).
+                        like(StringUtils.isNotBlank(szzy), "zydm", szzy).
                         like(StringUtils.isNotBlank(nj), "nj", nj).
-                        like(StringUtils.isNotBlank(szbj), "szbj", szbj).
+                        like(StringUtils.isNotBlank(szbj), "bjdm", szbj).
                         eq(   ztm > 0 ,"ztm",ztm)
         );
 
