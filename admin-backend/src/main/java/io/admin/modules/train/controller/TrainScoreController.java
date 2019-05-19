@@ -22,6 +22,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -299,31 +301,46 @@ public class TrainScoreController {
     public void download(HttpServletResponse response, HttpServletRequest request) {
         InputStream inputStream = null;
         ServletOutputStream servletOutputStream = null;
+
+        String filename = "tpl.xls";
+
+        response.setHeader("content-type", "application/octet-stream");
+        response.setContentType("application/octet-stream");
+        //3.设置content-disposition响应头控制浏览器以下载的形式打开文件
+        response.setHeader("Content-Disposition", "attachment;filename="  + filename);
+        byte[] buff = new byte[1024];
+        BufferedInputStream bis = null;
+        OutputStream os = null;
+        int readTmp = 0;
+
         try {
-            String filename = "成绩模板.xls";
-
-            File file = ResourceUtils.getFile("classpath:template/scoreTemplate.xls");
-            response.setContentType("application/vnd.ms-excel");
-            response.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-            response.addHeader("charset", "utf-8");
-            response.addHeader("Pragma", "no-cache");
-            String encodeName = URLEncoder.encode(filename, StandardCharsets.UTF_8.toString());
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + encodeName + "\"; filename*=utf-8''" + encodeName);
-
-            inputStream = new FileInputStream(file);
-            servletOutputStream = response.getOutputStream();
-            IOUtils.copy(inputStream, servletOutputStream);
-            response.flushBuffer();
+            Resource resource = new ClassPathResource("tpl/scoreTemplate.xls");
+            inputStream = resource.getInputStream();
+//            File file = ResourceUtils.getFile("classpath:tpl/scoreTemplate.xls");
+            //6.通过response对象获取OutputStream流
+            os = response.getOutputStream();
+            //4.根据文件路径获取要下载的文件输入流
+            bis = new BufferedInputStream(inputStream);
+            while ((readTmp =bis.read(buff)) != -1){
+                os.write(buff,0,readTmp);
+            }
+//            response.setContentType("application/vnd.ms-excel");
+//            response.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+//            response.addHeader("charset", "utf-8");
+//            response.addHeader("Pragma", "no-cache");
+//            String encodeName = URLEncoder.encode(filename, StandardCharsets.UTF_8.toString());
+//            response.setHeader("Content-Disposition", "attachment; filename=\"" + encodeName + "\"; filename*=utf-8''" + encodeName);
+//
+//            inputStream = new FileInputStream(file);
+//            servletOutputStream = response.getOutputStream();
+//            IOUtils.copy(inputStream, servletOutputStream);
+//            response.flushBuffer();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                if (servletOutputStream != null) {
-                    servletOutputStream.close();
-                }
-                if (inputStream != null) {
-                    inputStream.close();
-                }
+                bis.close();
+                inputStream.close();
                 // 召唤jvm的垃圾回收器
                 System.gc();
             } catch (Exception e) {
@@ -347,7 +364,7 @@ public class TrainScoreController {
 //            OutputStream os = null;
 //            try {
 //
-//                File file = ResourceUtils.getFile("classpath:template/scoreTemplate.xls");
+//                File file = ResourceUtils.getFile("classpath:tpl/scoreTemplate.xls");
 //                System.out.println(file.exists());
 //                os = response.getOutputStream(); //6.通过response对象获取OutputStream流
 //                bis = new BufferedInputStream(new FileInputStream(file));     //4.根据文件路径获取要下载的文件输入流

@@ -25,14 +25,18 @@
 
         <el-form-item label="是否同意" >
           <el-radio-group v-model="dataForm.statusCode" @change="changeStatusHandler">
-            <el-radio label="3">同意</el-radio>
+            <el-radio label="2">同意</el-radio>
             <el-radio label="9">不同意</el-radio>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="审核意见" prop="auditOption">
-          <el-input  type="textarea" v-model="dataForm.auditOption" placeholder="审核意见"></el-input>
+        <el-form-item label="审核意见" prop="academyAuditOption">
+          <el-input  type="textarea" v-model="dataForm.academyAuditOption" placeholder="审核意见"></el-input>
         </el-form-item>
+
+      <el-form-item label="审核意见" prop="auditOption" v-if="false">
+        <el-input  type="textarea" v-model="dataForm.auditOption" placeholder="审核意见"></el-input>
+      </el-form-item>
 
         <el-form-item label="申请人工号" prop="applicantId"  v-if="false">
           <el-input v-model="dataForm.applicantId" placeholder="申请人工号"></el-input>
@@ -43,9 +47,20 @@
         <el-form-item label="申请人所在部门" prop="applicantDept" v-if="false">
           <el-input v-model="dataForm.applicantDept" placeholder="申请人所在部门"></el-input>
         </el-form-item>
-        <el-form-item label="审核人id" prop="auditorId" v-if="false">
-          <el-input v-model="dataForm.auditorId" placeholder="审核人id"></el-input>
+      <el-form-item label="学院审核人id" prop="auditorId" v-if="false">
+        <el-input v-model="dataForm.auditorId" placeholder="审核人id"></el-input>
+      </el-form-item>
+
+      <el-form-item label="学院审核人姓名" prop="academyAuditorName" v-if="false">
+        <el-input v-model="dataForm.academyAuditorName" placeholder="学院审核人姓名"></el-input>
+      </el-form-item>
+        <el-form-item label="学院审核人id" prop="academyAuditorId" v-if="false">
+          <el-input v-model="dataForm.academyAuditorId" placeholder="学院审核人id"></el-input>
         </el-form-item>
+      <el-form-item label="学院审核时间" prop="academyAuditTime" v-if="false">
+        <el-input v-model="dataForm.academyAuditTime" placeholder="学院审核时间"></el-input>
+      </el-form-item>
+
         <el-form-item label="审核人姓名" prop="auditorName" v-if="false">
           <el-input v-model="dataForm.auditorName" placeholder="审核人姓名"></el-input>
         </el-form-item>
@@ -86,15 +101,22 @@
           applicantId: '',
           applicantName: '',
           applicantDept: '',
+          academyAuditorId:'',
+          academyAuditorName:'',
+          academyAuditTime:'',
+          academyAuditOption:'',
           auditorId: '',
           auditorName: '',
           auditTime: '',
-          status: '3',
-          statusCode: '审核通过'
+          status: '2',
+          statusCode: '待中心审核'
         },
         dataRule: {
           status: [
             { required: true, validator: valCarSel, trigger: 'change' }
+          ],
+          academyAuditOption: [
+            { required: true, message: '审核意见不能为空', trigger: 'blur' }
           ]
         }
       }
@@ -123,8 +145,12 @@
                 this.dataForm.auditorId = data.trainProject.auditorId
                 this.dataForm.auditorName = data.trainProject.auditorName
                 this.dataForm.auditTime = data.trainProject.auditTime
-                this.dataForm.status = '审核通过'
-                this.dataForm.statusCode = '3'
+                this.dataForm.academyAuditId = data.trainProject.academyAuditId
+                this.dataForm.academyAuditorName = data.trainProject.academyAuditorName
+                this.dataForm.academyAuditorTime = data.trainProject.academyAuditorTime
+                this.dataForm.academyAuditOption = data.trainProject.academyAuditOption
+                this.dataForm.status = '待中心审核'
+                this.dataForm.statusCode = '2'
               }
             })
           }
@@ -132,8 +158,8 @@
       },
 
       changeStatusHandler (value) {
-        if (value === '3') {
-          this.dataForm.status = '审核通过'
+        if (value === '2') {
+          this.dataForm.status = '待中心审核'
         } else {
           this.dataForm.status = '审核未通过'
         }
@@ -143,7 +169,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
-              url: this.$http.adornUrl('/train/projectAudit/audit'),
+              url: this.$http.adornUrl('/train/projectAcademyAudit/audit'),
               method: 'post',
               data: this.$http.adornData({
                 'id': this.dataForm.id || undefined,
@@ -159,7 +185,8 @@
                 'auditorName': this.dataForm.auditorName,
                 'auditTime': this.dataForm.auditTime,
                 'status': this.dataForm.status,
-                'statusCode': this.dataForm.statusCode
+                'statusCode': this.dataForm.statusCode,
+                'academyAuditOption': this.dataForm.academyAuditOption,
               })
             }).then(({data}) => {
               if (data && data.code === 0) {

@@ -1,12 +1,8 @@
 package io.admin.modules.train.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import io.admin.common.utils.PageUtils;
+import io.admin.common.utils.R;
 import io.admin.common.utils.ShiroUtils;
 import io.admin.modules.sys.entity.SysUserEntity;
 import io.admin.modules.train.entity.TrainProjectEntity;
@@ -15,22 +11,17 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import io.admin.common.utils.PageUtils;
-import io.admin.common.utils.R;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
 
 
-/**
- * 
- *
- * @author Wangcaner
- * @email wangcaner@outlook.com
- * @date 2019-01-07 11:41:08
- */
 @RestController
-@RequestMapping("train/project")
-public class TrainProjectController {
+@RequestMapping("train/projectSearch")
+public class TrainProjectSearchController {
 
     @Autowired
     private TrainProjectService trainProjectService;
@@ -39,9 +30,9 @@ public class TrainProjectController {
      * 列表
      */
     @RequestMapping("/list")
-    @RequiresPermissions("train:project:list")
+    @RequiresPermissions("train:project:search:list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = trainProjectService.queryPage(params);
+        PageUtils page = trainProjectService.queryPage1(params);
 
         return R.ok().put("page", page);
     }

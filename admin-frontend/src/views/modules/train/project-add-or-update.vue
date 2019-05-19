@@ -36,9 +36,6 @@
           <!--<el-input  type="textarea" v-model="dataForm.trainingPlan" placeholder="培养方案"></el-input>-->
         <!--</el-form-item>-->
 
-        <!--<el-form-item label="审核意见" prop="auditOption">-->
-          <!--<el-input  type="textarea" v-model="dataForm.auditOption" placeholder="审核意见"></el-input>-->
-        <!--</el-form-item>-->
 
 
         <el-form-item label="申请人工号" prop="applicantId"  v-if="false">
@@ -50,7 +47,27 @@
         <el-form-item label="申请人所在部门" prop="applicantDept" v-if="false">
           <el-input v-model="dataForm.applicantDept" placeholder="申请人所在部门"></el-input>
         </el-form-item>
-        <el-form-item label="审核人id" prop="auditorId" v-if="false">
+
+        <el-form-item label="院系审核人id" prop="academyAuditorId"  v-if="false">
+          <el-input v-model="dataForm.academyAuditorId" placeholder="院系审核人id"></el-input>
+        </el-form-item>
+        <el-form-item label="院系审核人姓名" prop="academyAuditorName" v-if="false">
+          <el-input v-model="dataForm.academyAuditorName" placeholder="院系审核人姓名"></el-input>
+        </el-form-item>
+        <el-form-item label="院系审核时间" prop="academyAuditTime" v-if="false">
+          <el-input v-model="dataForm.academyAuditTime" placeholder="院系审核时间"></el-input>
+        </el-form-item>
+        <el-form-item label="院系审核意见" prop="academyAuditOption" v-if="dataForm.statusCode != ''&& dataForm.statusCode != '1'">
+          <el-input type="textarea" v-model="dataForm.academyAuditOption" placeholder="院系审核意见"></el-input>
+        </el-form-item>
+
+        <el-form-item label="中心审核意见" prop="auditOption" v-if="dataForm.statusCode != '1' && dataForm.statusCode != ''">
+          <el-input  type="textarea" v-model="dataForm.auditOption" placeholder="中心审核意见"></el-input>
+        </el-form-item>
+
+
+
+      <el-form-item label="审核人id" prop="auditorId" v-if="false">
           <el-input v-model="dataForm.auditorId" placeholder="审核人id"></el-input>
         </el-form-item>
         <el-form-item label="审核人姓名" prop="auditorName" v-if="false">
@@ -62,6 +79,7 @@
         <el-form-item label="状态" prop="status" v-if="false">
           <el-input v-model="dataForm.status" placeholder="状态"></el-input>
         </el-form-item>
+
         <el-form-item label="状态码" prop="statusCode" v-if="false">
           <el-input v-model="dataForm.statusCode" placeholder="状态码"></el-input>
         </el-form-item>
@@ -120,6 +138,10 @@
           auditorId: '',
           auditorName: '',
           auditTime: '',
+          academyAuditorId: '',
+          academyAuditorName: '',
+          academyAuditTime: '',
+          academyAuditOption: '',
           status: '',
           statusCode: '',
           trainClassHour: '',
@@ -176,6 +198,10 @@
                 this.dataForm.trainTarget = data.trainProject.trainTarget
                 this.dataForm.classHourAllocation = data.trainProject.classHourAllocation
                 this.dataForm.trainRequire = data.trainProject.trainRequire
+                this.dataForm.academyAuditOption = data.trainProject.academyAuditOption
+                this.dataForm.academyAuditTime = data.trainProject.academyAuditTime
+                this.dataForm.academyAuditorId = data.trainProject.academyAuditorId
+                this.dataForm.academyAuditorName = data.trainProject.academyAuditorName
               }
             })
           }

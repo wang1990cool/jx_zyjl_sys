@@ -117,11 +117,10 @@
           method: 'post',
           responseType: 'blob'
         }).then(({data}) => {
-          alert(data)
           if (data) {
             console.log('文件下载成功')
             let blob = new Blob([data], {
-              type: 'application/vnd.ms-excel'
+              type: 'application/vnd.ms-excel;charset-UTF-8'
             })
             let objectUrl = URL.createObjectURL(blob)
             console.log(objectUrl)

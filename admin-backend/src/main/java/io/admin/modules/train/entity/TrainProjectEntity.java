@@ -67,6 +67,23 @@ public class TrainProjectEntity implements Serializable {
 	 */
 	private Date auditTime;
 	/**
+	 * 学院审核时间
+	 */
+	private String academyAuditorId;
+	/**
+	 * 学院审核姓名
+	 */
+	private String academyAuditorName;
+	/**
+	 * 学院审核意见
+	 */
+	private String academyAuditOption;
+	/**
+	 * 学院审核时间
+	 */
+	private Date academyAuditTime;
+
+	/**
 	 * 状态
 	 */
 	private String status;
@@ -338,5 +355,37 @@ public class TrainProjectEntity implements Serializable {
 	 */
 	public String getTrainRequire() {
 		return trainRequire;
+	}
+
+	public String getAcademyAuditorId() {
+		return academyAuditorId;
+	}
+
+	public void setAcademyAuditorId(String academyAuditorId) {
+		this.academyAuditorId = academyAuditorId;
+	}
+
+	public String getAcademyAuditorName() {
+		return academyAuditorName;
+	}
+
+	public void setAcademyAuditorName(String academyAuditorName) {
+		this.academyAuditorName = academyAuditorName;
+	}
+
+	public Date getAcademyAuditTime() {
+		return academyAuditTime;
+	}
+
+	public void setAcademyAuditTime(Date academyAuditTime) {
+		this.academyAuditTime = academyAuditTime;
+	}
+
+	public String getAcademyAuditOption() {
+		return academyAuditOption;
+	}
+
+	public void setAcademyAuditOption(String academyAuditOption) {
+		this.academyAuditOption = academyAuditOption;
 	}
 }

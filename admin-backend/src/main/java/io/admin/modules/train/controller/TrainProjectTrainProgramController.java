@@ -34,7 +34,7 @@ public class TrainProjectTrainProgramController {
     @RequestMapping("/projectList")
     @RequiresPermissions("train:project:trainProgram:projectList")
     public R projectList(@RequestParam Map<String, Object> params){
-        params.put("statusCode", new String[]{"3", "4", "5"});
+        params.put("statusCode", new String[]{"3", "4"});
         PageUtils page = trainProjectService.projectQueryPage(params);
 
         return R.ok().put("page", page);
@@ -44,7 +44,7 @@ public class TrainProjectTrainProgramController {
      * 列表
      */
     @RequestMapping("/list")
-    @RequiresPermissions("train:project:trainProgram:list")
+//    @RequiresPermissions("train:project:trainProgram:list")
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = trainProjectTrainProgramService.queryPage(params);
 

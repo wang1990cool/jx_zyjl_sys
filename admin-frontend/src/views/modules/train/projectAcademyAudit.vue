@@ -60,13 +60,13 @@
         label="项目预算">
       </el-table-column>
 
-      <!--<el-table-column-->
-        <!--prop="applicantId"-->
-        <!--header-align="center"-->
-        <!--align="center"-->
-        <!--width="100"-->
-        <!--label="申请人工号">-->
-      <!--</el-table-column>-->
+      <el-table-column
+        prop="applicantId"
+        header-align="center"
+        align="center"
+        width="100"
+        label="申请人工号">
+      </el-table-column>
       <el-table-column
         prop="applicantName"
         header-align="center"
@@ -81,28 +81,6 @@
         width="140"
         label="申请人部门">
       </el-table-column>
-
-      <!--<el-table-column-->
-        <!--prop="applicantId"-->
-        <!--header-align="center"-->
-        <!--align="center"-->
-        <!--width="100"-->
-        <!--label="申请人工号">-->
-      <!--</el-table-column>-->
-      <!--<el-table-column-->
-        <!--prop="applicantName"-->
-        <!--header-align="center"-->
-        <!--align="center"-->
-        <!--width="100"-->
-        <!--label="申请人姓名">-->
-      <!--</el-table-column>-->
-      <!--<el-table-column-->
-        <!--prop="applicantDept"-->
-        <!--header-align="center"-->
-        <!--align="center"-->
-        <!--width="140"-->
-        <!--label="申请人部门">-->
-      <!--</el-table-column>-->
       <!--<el-table-column-->
         <!--prop="auditorId"-->
         <!--header-align="center"-->
@@ -135,6 +113,7 @@
           <el-tag v-if="scope.row.statusCode === '3'" size="small" type="primary">审核通过</el-tag>
           <el-tag v-if="scope.row.statusCode === '4'" size="small" type="danger">课程已填写</el-tag>
           <el-tag v-if="scope.row.statusCode === '5'" size="small" type="info">项目结束</el-tag>
+          <el-tag v-if="scope.row.statusCode === '6'" size="small" type="success">待院系审核</el-tag>
         </template>
       </el-table-column>
 
@@ -145,8 +124,8 @@
         width="160"
         label="操作">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.statusCode === '2'" type="text" size="small" @click="auditHandle(scope.row.id)">审核</el-button>
-          <el-button v-if="scope.row.statusCode !== '2'" type="text" size="small" @click="printHandle(scope.row.id)">打印</el-button>
+          <el-button v-if="scope.row.statusCode === '6'" type="text" size="small" @click="auditHandle(scope.row.id)">审核</el-button>
+          <!--<el-button v-if="scope.row.statusCode !== '2'" type="text" size="small" @click="printHandle(scope.row.id)">打印</el-button>-->
           <el-button type="text" size="small" @click="detailHandle(scope.row.id)">详情</el-button>
           <el-button v-if="scope.row.statusCode === '4' || scope.row.statusCode === '5'" type="text" size="small" @click="trainProgramDetailHandle(scope.row.id, scope.row.projectId)">课程详情</el-button>
         </template>
@@ -164,7 +143,7 @@
     <!-- 弹窗, 新增 / 修改 -->
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
     <train-program-detail-list v-if="detailVisible" ref="trainProgramDetailList"></train-program-detail-list>
-    <project-audit v-if="projectAuditVisible" ref="projectAudit" @refreshDataList="getDataList"></project-audit>
+    <project-academy-audit v-if="projectAcademyAuditVisible" ref="projectAcademyAudit" @refreshDataList="getDataList"></project-academy-audit>
   </div>
 </template>
 
@@ -172,6 +151,7 @@
   import projectAudit from './projectAudit-audit'
   import trainProgramDetailList from './projectTrainProgram-detail-list'
   import AddOrUpdate from './project-add-or-update'
+  import projectAcademyAudit from './projectAcademyAudit-audit'
   let moment = require('moment');
 
   export default {
@@ -190,13 +170,15 @@
         order:'statusCode desc',
         detailVisible: false,
         addOrUpdateVisible: false,
+        projectAcademyAuditVisible: false
       }
     },
     components: {
       // AddOrUpdate
       projectAudit,
       trainProgramDetailList,
-      AddOrUpdate
+      AddOrUpdate,
+      projectAcademyAudit
     },
     activated () {
       this.getDataList()
@@ -206,7 +188,7 @@
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/train/projectAudit/projectList'),
+          url: this.$http.adornUrl('/train/projectAcademyAudit/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,
@@ -249,33 +231,12 @@
       },
       // 新增 / 修改
       auditHandle (id) {
-        this.projectAuditVisible = true
+        this.projectAcademyAuditVisible = true
         this.$nextTick(() => {
-          this.$refs.projectAudit.init(id)
+          this.$refs.projectAcademyAudit.init(id)
         })
       },
 
-      printHandle (id) {
-        this.$http({
-          url: this.$http.adornUrl(`/train/projectAudit/print/${id}?token=${this.$cookie.get('token')}`),
-          method: 'post',
-          responseType:'arraybuffer'
-        })
-          .then(({data}) => {
-            if (data) {
-              let blob = new Blob([data], {
-                type: 'application/pdf;charset-UTF-8'
-              });
-              let objectUrl = URL.createObjectURL(blob);
-              let downEle = document.createElement("a");
-              let fname = '审批表.pdf';
-              downEle.href = objectUrl;
-              downEle.setAttribute("download", fname);
-              document.body.appendChild(downEle);
-              downEle.click();
-            }
-          })
-      },
 
       trainProgramDetailHandle (id, projectId) {
         this.detailVisible = true;

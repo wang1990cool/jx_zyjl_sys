@@ -21,7 +21,6 @@ public class TrainProjectServiceImpl extends ServiceImpl<TrainProjectDao, TrainP
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
-        String projectId = (String)params.get("projectId");
         String projectName = (String)params.get("projectName");
 
         SysUserEntity sysUserEntity = ShiroUtils.getUserEntity();
@@ -30,7 +29,6 @@ public class TrainProjectServiceImpl extends ServiceImpl<TrainProjectDao, TrainP
         Page<TrainProjectEntity> page = this.selectPage(
                 new Query<TrainProjectEntity>(params).getPage(),
                 new EntityWrapper<TrainProjectEntity>().
-                        like(StringUtils.isNotBlank(projectId), "project_id", projectId).
                         like(StringUtils.isNotBlank(projectName), "project_name", projectName).
                         eq("applicant_id", userName).
                         orderBy("id desc")
@@ -40,14 +38,30 @@ public class TrainProjectServiceImpl extends ServiceImpl<TrainProjectDao, TrainP
     }
 
     @Override
+    public PageUtils queryPage1(Map<String, Object> params) {
+        String projectName = (String)params.get("projectName");
+
+        Page<TrainProjectEntity> page = this.selectPage(
+                new Query<TrainProjectEntity>(params).getPage(),
+                new EntityWrapper<TrainProjectEntity>().
+                        like(StringUtils.isNotBlank(projectName), "project_name", projectName).
+                        orderBy("id desc")
+        );
+
+        return new PageUtils(page);
+    }
+
+
+    @Override
     public PageUtils projectQueryPage(Map<String, Object> params) {
         String projectId = (String)params.get("projectId");
         String projectName = (String)params.get("projectName");
 //        String order = (String)params.get("order");
         String[] statusCode = (String[])params.get("statusCode");
 
-        SysUserEntity sysUserEntity = ShiroUtils.getUserEntity();
-        String userName = sysUserEntity.getUsername();
+//        SysUserEntity sysUserEntity = ShiroUtils.getUserEntity();
+//        String userName = sysUserEntity.getUsername();
+//        String unit = sysUserEntity.getUnit();
 
         Page<TrainProjectEntity> page = this.selectPage(
                 new Query<TrainProjectEntity>(params).getPage(),
@@ -55,7 +69,8 @@ public class TrainProjectServiceImpl extends ServiceImpl<TrainProjectDao, TrainP
                         like(StringUtils.isNotBlank(projectId), "project_id", projectId).
                         like(StringUtils.isNotBlank(projectName), "project_name", projectName).
                         in("status_code", statusCode).
-                        eq("applicant_id", userName).
+//                        eq(StringUtils.isNotBlank(unit), "applicant_dept", unit).
+//                        eq("applicant_id", userName).
                         orderBy("status_code asc")
         );
 

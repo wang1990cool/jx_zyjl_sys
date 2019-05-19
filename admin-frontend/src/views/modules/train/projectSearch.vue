@@ -15,12 +15,6 @@
       </el-form-item>
     </el-form>
 
-    <el-form >
-      <el-form-item style="margin-bottom: 5px">
-        <el-button v-if="isAuth('train:project:save')" size="small" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button v-if="isAuth('train:project:delete')" size="small" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
-      </el-form-item>
-    </el-form>
     <el-table
       :data="dataList"
       border
@@ -145,13 +139,9 @@
         fixed="right"
         header-align="center"
         align="left"
-        width="220"
+        width="120"
         label="操作">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.statusCode === '1' || scope.row.statusCode === '9' " type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
-          <el-button v-if="scope.row.statusCode === '1' || scope.row.statusCode === '9'" type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
-          <el-button v-if="scope.row.statusCode === '1' || scope.row.statusCode === '9' " type="text" size="small" @click="sumbitHandle(scope.row.id)">提交</el-button>
-          <el-button v-if="scope.row.statusCode === '6'" type="text" size="small" @click="withdrawHandle(scope.row.id)">撤回</el-button>
           <el-button v-if="scope.row.statusCode === '4' || scope.row.statusCode === '5'" type="text" size="small" @click="trainProgramDetailHandle(scope.row.id, scope.row.projectId)">课程详情</el-button>
           <el-button type="text" size="small" @click="detailHandle(scope.row.id)">详情</el-button>
 
@@ -210,7 +200,7 @@
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/train/project/list'),
+          url: this.$http.adornUrl('/train/projectSearch/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,

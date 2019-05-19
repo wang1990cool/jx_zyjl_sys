@@ -1,43 +1,31 @@
 package io.admin.modules.train.controller;
 
 import com.itextpdf.text.Document;
-import com.itextpdf.text.Font;
 import com.itextpdf.text.pdf.*;
 import io.admin.common.utils.PageUtils;
 import io.admin.common.utils.R;
 import io.admin.common.utils.ShiroUtils;
 import io.admin.modules.sys.entity.SysUserEntity;
 import io.admin.modules.train.entity.TrainProjectEntity;
-import io.admin.modules.train.service.TrainProjectAuditService;
+import io.admin.modules.train.service.TrainProjectAcademyAuditService;
 import io.admin.modules.train.service.TrainProjectService;
 import org.apache.commons.io.IOUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
-/**
- * 
- *
- * @author Wangcaner
- * @email wangcaner@outlook.com
- * @date 2019-01-07 11:41:08
- */
 @RestController
-@RequestMapping("train/projectAudit")
-public class TrainProjectAuditController {
+@RequestMapping("train/projectAcademyAudit")
+public class TrainProjectAcademyAuditController {
 
     @Autowired
-    private TrainProjectAuditService trainProjectAuditService;
+    private TrainProjectAcademyAuditService trainProjectAcademyAuditService;
 
     @Autowired
     private TrainProjectService trainProjectService;
@@ -47,9 +35,10 @@ public class TrainProjectAuditController {
      * 列表
      */
     @RequestMapping("/list")
-    @RequiresPermissions("train:project:audit:list")
+//    @RequiresPermissions("train:project:academy:audit:list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = trainProjectAuditService.queryPage(params);
+        params.put("statusCode", new String[]{"2", "3","4","5","6"});
+        PageUtils page = trainProjectAcademyAuditService.queryPage(params);
 
         return R.ok().put("page", page);
     }
@@ -58,9 +47,9 @@ public class TrainProjectAuditController {
      * 项目列表
      */
     @RequestMapping("/projectList")
-    @RequiresPermissions("train:project:audit:projectList")
+//    @RequiresPermissions("train:project:academy:audit:projectList")
     public R projectList(@RequestParam Map<String, Object> params){
-        params.put("statusCode", new String[]{ "2","3","4","5"});
+        params.put("statusCode", new String[]{"2", "3","4","5","6"});
         PageUtils page = trainProjectService.projectQueryPage(params);
 
         return R.ok().put("page", page);
@@ -71,52 +60,43 @@ public class TrainProjectAuditController {
      * 信息
      */
     @RequestMapping("/info/{id}")
-    @RequiresPermissions("train:project:audit:info")
     public R info(@PathVariable("id") Long id){
-		TrainProjectEntity trainProject = trainProjectAuditService.selectById(id);
+		TrainProjectEntity trainProject = trainProjectAcademyAuditService.selectById(id);
 
         return R.ok().put("trainProject", trainProject);
     }
 
 
     @RequestMapping("/audit")
-    @RequiresPermissions("train:project:audit:audit")
+    @RequiresPermissions("train:project:academy:audit:audit")
     public R audit(@RequestBody TrainProjectEntity trainProject){
         SysUserEntity sysUserEntity = ShiroUtils.getUserEntity();
 
-        trainProject.setAuditorId(sysUserEntity.getUsername());
-        trainProject.setAuditorName(sysUserEntity.getUsercname());
-        trainProject.setAuditTime(new Date());
+        trainProject.setAcademyAuditorId(sysUserEntity.getUsername());
+        trainProject.setAcademyAuditorName(sysUserEntity.getUsercname());
+        trainProject.setAcademyAuditTime(new Date());
 
-        trainProjectAuditService.updateById(trainProject);
+        trainProjectAcademyAuditService.updateById(trainProject);
 
         return R.ok();
     }
 
     @RequestMapping("/print/{id}")
     public void info(@PathVariable("id") Long id, HttpServletResponse response) {
-        TrainProjectEntity trainProject = trainProjectAuditService.selectById(id);
+        TrainProjectEntity trainProject = trainProjectAcademyAuditService.selectById(id);
         ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
         OutputStream out = null;
-        InputStream inputStream = null;
         byte[] pdfTemplate;
         try {
             //设置响应contentType
             response.setContentType("application/pdf");
             //设置响应文件名称
             String fileName = new String("申请表.pdf".getBytes("UTF-8"), "iso-8859-1");
-            response.setHeader("content-type", "application/octet-stream");
-            response.setContentType("application/octet-stream");
             response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
-            Resource resource = new ClassPathResource("tpl/auditTemplate.pdf");
-            inputStream = resource.getInputStream();
+            File file = ResourceUtils.getFile("classpath:tpl/auditTemplate.pdf");
 
-//            File file = resource.getFile();
-//            File file = resource.getFile();
-//            File file = ResourceUtils.getFile("classpath:tpl/auditTemplate.pdf");
-
-            pdfTemplate = IOUtils.toByteArray(inputStream);
+            pdfTemplate = IOUtils.toByteArray(new FileInputStream(file));
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
@@ -170,7 +150,6 @@ public class TrainProjectAuditController {
         } finally {
             try {
                 pdfOutputStream.close();
-                inputStream.close();
                 out.flush();
                 out.close();
             } catch (IOException e) {
