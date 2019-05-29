@@ -13,8 +13,8 @@
     <el-form-item label="学生姓名" prop="studentName">
       <el-input v-model="dataForm.studentName" placeholder=""></el-input>
     </el-form-item>
-    <el-form-item label="课程号" prop="courseNum">
-      <el-input v-model="dataForm.courseNum" placeholder="课程号"></el-input>
+    <el-form-item label="身份证号" prop="identityCard">
+      <el-input v-model="dataForm.identityCard" placeholder="身份证号"></el-input>
     </el-form-item>
     <el-form-item label="课程名" prop="courseName">
       <el-input v-model="dataForm.courseName" placeholder="课程名"></el-input>
@@ -55,7 +55,7 @@
           year: '',
           studentNum: '',
           studentName: '',
-          courseNum: '',
+          identityCard: '',
           courseName: '',
           studentScore: '',
           statusCode: '',
@@ -71,9 +71,7 @@
           studentName: [
             { required: true, message: '学生姓名不能为空', trigger: 'blur' }
           ],
-          courseNum: [
-            { required: true, message: '课程号不能为空', trigger: 'blur' }
-          ],
+
           courseName: [
             { required: true, message: '课程明不能为空', trigger: 'blur' }
           ],
@@ -99,7 +97,7 @@
                 this.dataForm.year = data.trainScore.year
                 this.dataForm.studentNum = data.trainScore.studentNum
                 this.dataForm.studentName = data.trainScore.studentName
-                this.dataForm.courseNum = data.trainScore.courseNum
+                this.dataForm.identityCard = data.trainScore.identityCard
                 this.dataForm.courseName = data.trainScore.courseName
                 this.dataForm.studentScore = data.trainScore.studentScore
                 this.dataForm.statusCode = data.trainScore.statusCode
@@ -121,7 +119,7 @@
                 'year': this.dataForm.year,
                 'studentNum': this.dataForm.studentNum,
                 'studentName': this.dataForm.studentName,
-                'courseNum': this.dataForm.courseNum,
+                'identityCard': this.dataForm.identityCard,
                 'courseName': this.dataForm.courseName,
                 'studentScore': this.dataForm.studentScore,
                 'statusCode': this.dataForm.statusCode,

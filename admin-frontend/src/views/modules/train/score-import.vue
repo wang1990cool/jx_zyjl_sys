@@ -8,6 +8,7 @@
       :before-upload="beforeUpload"
       :auto-upload="false"
       :file-list="fileList"
+      :on-success="handleSuccess"
       limit=1
     >
       <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
@@ -100,6 +101,19 @@
         var t = setTimeout(function () {
           me.$emit('refreshDataList')
         }, 1000)
+      },
+
+      handleSuccess(response, file, fileList){
+        console.log('上传成功');
+        if(response.code == 0){
+          setTimeout(() =>{
+            this.$message.success('成绩导入成功');
+            this.getVipList();
+          },2000);
+          fileList.splice(0);//上传成功后将fileList清空，不影响下一次上传
+        }else{
+          this.$message.error(response.msg)
+        }
       },
 
       // 下载模板

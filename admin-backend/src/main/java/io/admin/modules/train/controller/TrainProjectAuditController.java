@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
@@ -146,6 +147,26 @@ public class TrainProjectAuditController {
             if (trainProject.getTrainRequire() != null){
                 form.setFieldProperty("trainRequire", "textfont", bf, null);
                 form.setField("trainRequire", trainProject.getTrainRequire());
+            }
+
+            if (trainProject.getAcademyAuditOption() != null){
+                form.setFieldProperty("academyAuditOption", "textfont", bf, null);
+                form.setField("academyAuditOption", trainProject.getAcademyAuditOption());
+            }
+
+            if (trainProject.getAuditOption() != null){
+                form.setFieldProperty("auditOption", "textfont", bf, null);
+                form.setField("auditOption", trainProject.getAuditOption());
+            }
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+            if (trainProject.getAcademyAuditTime() != null){
+                form.setFieldProperty("academyAuditTime", "textfont", bf, null);
+                form.setField("academyAuditTime", sdf.format(trainProject.getAcademyAuditTime()));
+            }
+            if (trainProject.getAuditTime() != null){
+                form.setFieldProperty("auditTime", "textfont", bf, null);
+                form.setField("auditTime", sdf.format(trainProject.getAuditTime()));
             }
 
             stamper.setFormFlattening(true);

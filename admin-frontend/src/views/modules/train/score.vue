@@ -68,21 +68,23 @@
         prop="studentName"
         header-align="center"
         align="center"
-        width="120"
+        width="100"
         label="学生姓名">
       </el-table-column>
       <el-table-column
-        prop="courseNum"
+        prop="identityCard"
         header-align="center"
         align="center"
         sortable
-        label="课程号">
+        width="150"
+        label="身份证号">
       </el-table-column>
       <el-table-column
         prop="courseName"
         header-align="center"
         align="center"
         sortable
+        width="180"
         label="课程名">
       </el-table-column>
       <el-table-column
@@ -125,7 +127,7 @@
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
-    <!--<add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>-->
+    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
     <score-import v-if="scoreImportVisible" ref="scoreImport" @refreshDataList="getDataList"></score-import>
   </div>
 </template>

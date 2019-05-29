@@ -58,5 +58,8 @@ public class TrainScoreEntity implements Serializable {
 	private String status;
 
 
+	private String identityCard;
+
+
 
 }

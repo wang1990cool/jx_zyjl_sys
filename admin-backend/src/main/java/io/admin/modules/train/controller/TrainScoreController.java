@@ -24,6 +24,8 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -108,62 +110,73 @@ public class TrainScoreController {
 
     @RequestMapping(value = "/import")
     @RequiresPermissions("train:score:import")
-    public R upload(@RequestParam MultipartFile file) throws Exception {
+    @Transactional
+    public R upload(@RequestParam MultipartFile file) {
         String fileName = file.getOriginalFilename();
         boolean isExcel2003 = true;
         if (fileName.matches("^.+\\.(?i)(xlsx)$")) {
             isExcel2003 = false;
         }
 
-        InputStream is = file.getInputStream();
         Workbook wb = null;
+        Sheet sheet = null;
+
+        int errorNum = 0;
+        try {
+            InputStream is = file.getInputStream();
 //        if (isExcel2003) {
             wb = new HSSFWorkbook(is);
 //        } else {
 //            wb = new XSSFWorkbook(is);
 //        }
+            sheet = wb.getSheetAt(0);
 
-        Sheet sheet = wb.getSheetAt(0);
-
-
-
-        int totalRows = sheet.getPhysicalNumberOfRows();
-        int totalCells = 0;
-        if (totalRows >= 1 && sheet.getRow(0) != null) {
-            totalCells = sheet.getRow(0).getPhysicalNumberOfCells();
-        }
-        List<TrainScoreEntity> trainScoreEntities = new ArrayList<TrainScoreEntity>();
-        for (int i = 1; i < sheet.getLastRowNum() + 1; i++) {
-            TrainScoreEntity trainScoreEntity = new TrainScoreEntity();
-            Row row = sheet.getRow(i);
-            row.getCell(0).setCellType(Cell.CELL_TYPE_STRING);
-            String year = row.getCell(0).getStringCellValue();
-            row.getCell(1).setCellType(Cell.CELL_TYPE_STRING);
-            String studentNum = row.getCell(1).getStringCellValue();
-            row.getCell(3).setCellType(Cell.CELL_TYPE_STRING);
-            String courseNum = row.getCell(3).getStringCellValue();
-            List<TrainScoreEntity> entityList = trainScoreService.selectList(new EntityWrapper<TrainScoreEntity>().
-                    eq("year", year).
-                    eq("student_num", studentNum).
-                    eq("course_num", courseNum) );
-
-            if (entityList.size() > 0){
-                entityList.get(0).setStudentName(row.getCell(2).getStringCellValue());
-                entityList.get(0).setCourseName(row.getCell(4).getStringCellValue());
-                row.getCell(5).setCellType(Cell.CELL_TYPE_STRING);
-                entityList.get(0).setStudentScore(Double.parseDouble(row.getCell(5).getStringCellValue()));
-                trainScoreService.updateById(entityList.get(0));
-            } else {
-                row.getCell(0).setCellType(Cell.CELL_TYPE_STRING);
-                trainScoreEntity.setYear(row.getCell(0).getStringCellValue());
-                trainScoreEntity.setStudentNum(row.getCell(1).getStringCellValue());
-                trainScoreEntity.setStudentName(row.getCell(2).getStringCellValue());
-                trainScoreEntity.setCourseNum(row.getCell(3).getStringCellValue());
-                trainScoreEntity.setCourseName(row.getCell(4).getStringCellValue());
-                row.getCell(5).setCellType(Cell.CELL_TYPE_STRING);
-                trainScoreEntity.setStudentScore(Double.parseDouble(row.getCell(5).getStringCellValue()));
-                trainScoreService.insert(trainScoreEntity);
+            int totalRows = sheet.getPhysicalNumberOfRows();
+            int totalCells = 0;
+            if (totalRows >= 1 && sheet.getRow(0) != null) {
+                totalCells = sheet.getRow(0).getPhysicalNumberOfCells();
             }
+            System.out.println(sheet.getLastRowNum() + 1);
+            for (int i = 1; i < sheet.getLastRowNum() + 1; i++) {
+                errorNum = i;
+                System.out.println("errorNum = " + errorNum);
+                TrainScoreEntity trainScoreEntity = new TrainScoreEntity();
+                Row row = sheet.getRow(i);
+                row.getCell(0).setCellType(Cell.CELL_TYPE_STRING);
+                String year = row.getCell(0).getStringCellValue();
+                row.getCell(1).setCellType(Cell.CELL_TYPE_STRING);
+                String studentNum = row.getCell(1).getStringCellValue();
+                row.getCell(4).setCellType(Cell.CELL_TYPE_STRING);
+                String courseName = row.getCell(4).getStringCellValue();
+                List<TrainScoreEntity> entityList = trainScoreService.selectList(new EntityWrapper<TrainScoreEntity>().
+                        eq("year", year).
+                        eq("student_num", studentNum).
+                        eq("course_name", courseName) );
+
+                if (entityList.size() > 0){
+                    entityList.get(0).setStudentName(row.getCell(2).getStringCellValue());
+                    entityList.get(0).setCourseName(row.getCell(4).getStringCellValue());
+                    row.getCell(5).setCellType(Cell.CELL_TYPE_STRING);
+                    entityList.get(0).setStudentScore(Double.parseDouble(row.getCell(5).getStringCellValue()));
+                    trainScoreService.updateById(entityList.get(0));
+                } else {
+                    row.getCell(0).setCellType(Cell.CELL_TYPE_STRING);
+                    trainScoreEntity.setYear(row.getCell(0).getStringCellValue());
+                    trainScoreEntity.setStudentNum(row.getCell(1).getStringCellValue());
+                    trainScoreEntity.setStudentName(row.getCell(2).getStringCellValue());
+                    trainScoreEntity.setIdentityCard(row.getCell(3).getStringCellValue());
+                    trainScoreEntity.setCourseName(row.getCell(4).getStringCellValue());
+                    row.getCell(5).setCellType(Cell.CELL_TYPE_STRING);
+                    trainScoreEntity.setStudentScore(Double.parseDouble(row.getCell(5).getStringCellValue()));
+                    trainScoreService.insert(trainScoreEntity);
+                }
+            }
+
+        }catch (Exception e){
+//            if (errorNum !=  (sheet.getLastRowNum())){
+                return R.error("第" + (errorNum+1)+ "行数据存在问题");
+//            }
+//            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//关键
         }
 
         return R.ok();
