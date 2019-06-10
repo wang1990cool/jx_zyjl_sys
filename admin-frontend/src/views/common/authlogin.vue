@@ -71,11 +71,13 @@
       authLogin () {
 //        this.$router.replace({ name: 'home' })
           let sid = this.$route.query.sid
+/*
         this.$message({
           message: sid,
           type: 'success',
           duration: 1500
         })
+*/
             this.$http({
               url: this.$http.adornUrl('/callback/auth?sid=' + sid),
               method: 'get',

@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.admin.common.utils.R;
+import io.admin.modules.ksbm.entity.KsbmBaseInfoVo;
 import io.admin.modules.sys.entity.SysUserEntity;
 import io.admin.modules.sys.service.SysUserService;
 import io.admin.modules.sys.service.SysUserTokenService;
@@ -60,7 +61,7 @@ public class AuthReal {
     // oauth clientSecret
     String clientSecret = "m-zrtgOzQAG_4drfb92QigpPLvkWeHNxS589PfIO59E";
 
-    String myscope ="all";
+    String myscope ="all datacenter";
     String mystate = "yourstate";
     String TiupURl = "https://i.abc.edu.cn";
 
@@ -77,6 +78,14 @@ public class AuthReal {
     String accessTokenUrl = TiupURl+"/oauth2/token";
     //获取用户数据的api
     String userInfoUrl = TiupURl+"/apis/oauth2/v1/profile";
+
+    //获取用户基本信息的api
+   String userBaseInfoUrl= TiupURl+ "/apis/datacenter/v2/user_baseinfos";
+
+    private String myAccessToken;
+
+
+
 
     // 提交申请code的请求
 
@@ -125,11 +134,12 @@ public class AuthReal {
             OAuthAccessTokenResponse oAuthResponse =oAuthClient.accessToken(accessTokenRequest, OAuth.HttpMethod.POST);
             //获取服务端返回过来的access token
             String accessToken = oAuthResponse.getAccessToken();
+            myAccessToken=accessToken;
             //查看access token是否过期
             Long expiresIn =oAuthResponse.getExpiresIn();
 
 
-//            System.out.println("客户端/callbackCode方法的token：：："+accessToken);
+            System.out.println("客户端/callbackCode方法的token：：："+accessToken);
 
             return accessToken(accessToken,response);
         } catch (OAuthSystemException e) {
@@ -193,6 +203,74 @@ public class AuthReal {
         R r = sysUserTokenService.createToken(user.getUserId());
         return r;  //调用方法 loginconn.login(sid);
     }
+
+    private String getUid(){
+        OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
+        try {
+            System.out.println("-------获取Token----------------------------------------------------------------------------------");
+            OAuthClientRequest userInfoRequest = new OAuthBearerClientRequest(userInfoUrl).setAccessToken(myAccessToken).buildQueryMessage();
+            OAuthResourceResponse resourceResponse = oAuthClient.resource(userInfoRequest, OAuth.HttpMethod.GET,OAuthResourceResponse.class);
+            String username = resourceResponse.getBody();
+            JsonParser jp = new JsonParser();
+            //将json字符串转化成json对象
+            JsonObject jo = jp.parse(username).getAsJsonObject();
+
+            //uid学号或工号
+            String uid=jo.get("uid").getAsString();
+             return uid;
+        } catch (OAuthSystemException e) {
+            e.printStackTrace();
+        } catch (OAuthProblemException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    @RequestMapping("/getUserBaseInfo")
+    private R getUserBaseInfo(){
+        System.out.println("-------获取Uid-----------------");
+        String uid =this.getUid();
+        System.out.println("Uid=" + uid);
+        OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
+        try {
+            System.out.println("-------获取Token----------------------------------------------------------------------------------");
+            OAuthClientRequest userInfoRequest = new OAuthBearerClientRequest(userBaseInfoUrl+"/"+uid).setAccessToken(myAccessToken).buildQueryMessage();
+            OAuthResourceResponse resourceResponse = oAuthClient.resource(userInfoRequest, OAuth.HttpMethod.GET,OAuthResourceResponse.class);
+            String username = resourceResponse.getBody();
+            JsonParser jp = new JsonParser();
+            //将json字符串转化成json对象
+            JsonObject jo = jp.parse(username).getAsJsonObject();
+            System.out.println("-------获取userbaseinfo-----------------"+ jo );
+            JsonObject userinfo=jo.get("data").getAsJsonObject();
+            String idCard=userinfo.get("idcard").getAsString();
+            String mobile=userinfo.get("mobile").getAsString();
+            String email="";
+/*
+            System.out.println("email=" + userinfo.get("email"));
+            System.out.println(userinfo.get("email")!=null);
+            System.out.println(userinfo.get("email").isJsonNull());
+*/
+            if(!userinfo.get("email").isJsonNull() ){
+                email=userinfo.get("email").getAsString();
+            }
+            String gender=userinfo.get("gender").getAsString();
+
+            String birthday=userinfo.get("birthday").getAsString();
+            KsbmBaseInfoVo ksbaseinfovo=new KsbmBaseInfoVo();
+            ksbaseinfovo.setIdCard(idCard);
+            ksbaseinfovo.setMobile(mobile);
+            ksbaseinfovo.setEmail(email);
+            ksbaseinfovo.setBirthday(birthday);
+            ksbaseinfovo.setGender(gender);
+            //返回 调用登录方法
+            return R.ok().put("ksbminfo",ksbaseinfovo);
+        } catch (OAuthSystemException e) {
+            e.printStackTrace();
+        } catch (OAuthProblemException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
 
 
