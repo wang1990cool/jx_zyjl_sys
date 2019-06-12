@@ -125,7 +125,7 @@
         imageUrl: '',
         ksxmmcList: [],
         sexList: [{
-          value: '0',
+          value: '2',
           label: '女'
         }, {
           value: '1',
@@ -171,6 +171,30 @@
         this.dataForm.id = id || 0
         this.visible = true
         this.imageUrl = ''
+
+        this.$http({
+          url: this.$http.adornUrl('/callback/getUserBaseInfo'),
+          method: 'get'
+        }).then(({data}) => {
+          this.dataForm.birth = data.ksbminfo.birthday
+          this.dataForm.mz = '汉族'
+          this.dataForm.sfzh = data.ksbminfo.idCard
+          this.dataForm.telephone = data.ksbminfo.mobile
+          this.dataForm.email = data.ksbminfo.email
+
+          if ( data.ksbminfo.gender == '2' ) {
+            this.dataForm.sex = '女'
+          } else {
+            this.dataForm.sex = '男'
+          }
+//          this.$message({
+//            message: this.dataForm.sex + data.ksbminfo.gender,
+//            type: 'success',
+//            duration: 1500
+//          })
+
+        })
+
         this.$http({
           url: this.$http.adornUrl('/ksbm/ksapxxb/select'),
           method: 'get'
