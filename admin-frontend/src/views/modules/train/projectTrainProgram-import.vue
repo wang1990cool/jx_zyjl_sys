@@ -1,5 +1,13 @@
 <template>
-  <el-dialog :title="title" :visible.sync="dialogVisible" width="30%">
+  <el-dialog
+    :title="title"
+    :close-on-click-modal="false"
+    :modal="false"
+    :append-to-body="true"
+    :modal-append-to-body="true"
+    :visible.sync="dialogVisible"
+    width="30%">
+
     <el-upload
       style="margin-left:50px"
       class="upload-demo"
@@ -10,6 +18,7 @@
       :file-list="fileList"
       :on-success="handleSuccess"
       limit=1
+      :data="uploadData"
     >
       <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
       <div class="el-upload__tip" slot="tip">请先下载模板，按照模板字段进行填写！</div>
@@ -23,7 +32,7 @@
 
     <div slot="footer" class="dialog-footer">
       <el-button v-on:click="dialogVisible = false">取 消</el-button>
-      <el-button v-if="isAuth('train:score:import')" type="primary" @click="submitUpload">确 定</el-button>
+      <el-button type="primary" @click="submitUpload">确 定</el-button>
     </div>
   </el-dialog>
 </template>
@@ -43,18 +52,20 @@
         // processing: false,
         // uploadTip: '点击上传',
         // importFlag: 1,
-        title: '成绩导入',
+        title: '课程导入',
         dialogVisible: false,
         importUrl: '',
-        fileList: []
+        fileList: [],
+        projectId: ''
         // errorResults: []
       }
     },
     methods: {
-      init () {
-        this.importUrl = this.$http.adornUrl(`/train/score/import?token=${this.$cookie.get('token')}`)
+      init (projectId) {
+        this.importUrl = this.$http.adornUrl(`/train/projectTrainProgram/import?token=${this.$cookie.get('token')}`)
         this.fileList = []
         this.dialogVisible = true
+        this.projectId = projectId
         // this.importData()
       },
       // 上传成功后的回调
@@ -87,7 +98,16 @@
           return false
         }
 
+        this.uploadTip = '正在处理中...'
 
+        this.uploadData = {projectId:this.projectId};
+        console.log(this.uploadData)
+        let promise = new Promise((resolve) => {
+          this.$nextTick(function () {
+            resolve(true);
+          });
+        });
+        return promise;
       },
 
       getList () {
@@ -100,7 +120,7 @@
         me.$refs.upload.submit()
         var t = setTimeout(function () {
           me.$emit('refreshDataList')
-        }, 1000)
+        }, 2000)
       },
 
       handleSuccess(response, file, fileList){
@@ -108,7 +128,7 @@
         console.log('上传成功');
         if(response.code == 0){
           setTimeout(() =>{
-            this.$message.success('成绩导入成功');
+            this.$message.success('课程导入成功');
             me.$emit('refreshDataList')
           },2000);
           fileList.splice(0);//上传成功后将fileList清空，不影响下一次上传
@@ -128,7 +148,7 @@
       downloadHandle () {
          // this.url2 = this.$http.adornUrl(`/gc/gcscgyxxb/downloads/${this.dataForm.id}?token=${this.$cookie.get('token')}`)
         this.$http({
-          url: this.$http.adornUrl(`/train/score/download?token=${this.$cookie.get('token')}`),
+          url: this.$http.adornUrl(`/train/projectTrainProgram/download?token=${this.$cookie.get('token')}`),
           method: 'post',
           responseType: 'blob'
         }).then(({data}) => {
@@ -140,7 +160,7 @@
             let objectUrl = URL.createObjectURL(blob)
             console.log(objectUrl)
             let downEle = document.createElement('a')
-            let fname = 'scoreTemplate.xls' // 下载文件的名字
+            let fname = 'programTemplate.xls' // 下载文件的名字
             downEle.href = objectUrl
             downEle.setAttribute('download', fname)
             document.body.appendChild(downEle)

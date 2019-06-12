@@ -136,10 +136,8 @@ public class TrainScoreController {
             if (totalRows >= 1 && sheet.getRow(0) != null) {
                 totalCells = sheet.getRow(0).getPhysicalNumberOfCells();
             }
-            System.out.println(sheet.getLastRowNum() + 1);
             for (int i = 1; i < sheet.getLastRowNum() + 1; i++) {
                 errorNum = i;
-                System.out.println("errorNum = " + errorNum);
                 TrainScoreEntity trainScoreEntity = new TrainScoreEntity();
                 Row row = sheet.getRow(i);
                 row.getCell(0).setCellType(Cell.CELL_TYPE_STRING);

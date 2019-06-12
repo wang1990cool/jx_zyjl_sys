@@ -1,6 +1,6 @@
 <template>
     <el-dialog
-      :title="'培养方案填写'"
+      :title="'培养课程填写'"
       :close-on-click-modal="false"
       :visible.sync="visible">
       <div class="mod-config">
@@ -17,8 +17,9 @@
 
         <el-form >
           <el-form-item style="margin-bottom: 5px">
-            <el-button  size="small" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-            <el-button  size="small" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+            <el-button size="small" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+            <el-button size="small" type="primary" @click="importHandle()">导入</el-button>
+            <el-button size="small" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
           </el-form-item>
         </el-form>
 
@@ -92,6 +93,7 @@
           :total="totalPage"
           layout="total, sizes, prev, pager, next, jumper">
         </el-pagination>
+        <program-import v-if="programImportVisible" ref="programImport" @refreshDataList="getDataList"></program-import>
         <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
       </div>
     </el-dialog>
@@ -99,6 +101,8 @@
 
 <script>
   import AddOrUpdate from './projectTrainProgram-add-or-update'
+  import ProgramImport from './projectTrainProgram-import'
+
   let moment = require('moment');
 
   export default {
@@ -115,11 +119,13 @@
         totalPage: 0,
         dataListLoading: false,
         dataListSelections: [],
-        addOrUpdateVisible: false
+        addOrUpdateVisible: false,
+        programImportVisible:false
       }
     },
     components: {
-      AddOrUpdate
+      AddOrUpdate,
+      ProgramImport
     },
     activated () {
       this.getDataList()
@@ -168,6 +174,14 @@
       selectionChangeHandle (val) {
         this.dataListSelections = val
       },
+
+      importHandle () {
+        this.programImportVisible = true
+        this.$nextTick(() => {
+          this.$refs.programImport.init(this.projectId)
+        })
+      },
+
       // 新增 / 修改
       addOrUpdateHandle (id) {
         this.addOrUpdateVisible = true

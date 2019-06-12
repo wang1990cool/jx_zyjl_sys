@@ -76,7 +76,7 @@
         header-align="center"
         align="center"
         sortable
-        width="150"
+        width="170"
         label="身份证号">
       </el-table-column>
       <el-table-column

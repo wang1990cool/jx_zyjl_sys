@@ -26,6 +26,7 @@
       <el-date-picker
         v-model="dataForm.classDate"
         type="date"
+        value-format="yyyyMMdd"
         placeholder="选择日期">
       </el-date-picker>
     </el-form-item>
@@ -118,7 +119,7 @@
                 'teacherName': this.dataForm.teacherName,
                 'classHour': this.dataForm.classHour,
                 'classAddress': this.dataForm.classAddress,
-                'classDate': moment(this.dataForm.classDate).format('YYYY-MM-DD')
+                'classDate': moment(this.dataForm.classDate).format('YYYYMMDD')
               })
             }).then(({data}) => {
               if (data && data.code === 0) {
