@@ -2,6 +2,7 @@
     <el-dialog
       :title="'培养课程填写'"
       :close-on-click-modal="false"
+      width="900px"
       :visible.sync="visible">
       <div class="mod-config">
         <!--<el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">-->
@@ -51,12 +52,14 @@
             prop="teacherName"
             header-align="center"
             align="center"
+            width="80px"
             label="教师姓名">
           </el-table-column>
           <el-table-column
             prop="classHour"
             header-align="center"
             align="center"
+            width="70px"
             label="课时">
           </el-table-column>
           <el-table-column
@@ -64,19 +67,42 @@
             header-align="center"
             align="center"
             :formatter="dateFormat"
+            width="100px"
             label="上课时间">
           </el-table-column>
           <el-table-column
             prop="classAddress"
             header-align="center"
             align="center"
+            width="120px"
             label="上课地点">
+          </el-table-column>
+          <el-table-column
+            prop="studentNum"
+            header-align="center"
+            align="center"
+            width="80px"
+            label="学生人数">
+          </el-table-column>
+          <el-table-column
+            prop="startSection"
+            header-align="center"
+            align="center"
+            width="80px"
+            label="开始节次">
+          </el-table-column>
+          <el-table-column
+            prop="endSection"
+            header-align="center"
+            align="center"
+            width="80px"
+            label="结束节次">
           </el-table-column>
           <el-table-column
             fixed="right"
             header-align="center"
             align="center"
-            width="150"
+            width="100"
             label="操作">
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>

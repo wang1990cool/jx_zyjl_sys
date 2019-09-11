@@ -31,6 +31,24 @@
       </el-date-picker>
     </el-form-item>
 
+    <el-form-item label="上课人数" prop="studentNum">
+      <el-input v-model.number="dataForm.studentNum" type="number" placeholder="上课人数"></el-input>
+    </el-form-item>
+
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="开始节次" prop="startSection">
+            <el-input v-model.number="dataForm.startSection" type="number" placeholder="开始节次"></el-input>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="12">
+          <el-form-item label="结束节次" prop="endSection">
+            <el-input v-model.number="dataForm.endSection" type="number" placeholder="结束节次"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">取消</el-button>
@@ -61,7 +79,10 @@
           teacherName: '',
           classHour: '',
           classDate: '',
-          classAddress: ''
+          classAddress: '',
+          studentNum: '',
+          startSection: '',
+          endSection: ''
         },
         dataRule: {
           projectId: [
@@ -75,6 +96,15 @@
           ],
           classHour: [
             { required: true, validator: classHourRule, trigger: 'blur' }
+          ],
+          studentNum: [
+            {  type: 'number', min: 1, trigger: 'blur', message: '学生不能小于1',}
+          ],
+          startNum: [
+            {  type: 'number', min: 1, trigger: 'blur', message: '请填写数字',}
+          ],
+          endNum: [
+            {  type: 'number', min: 1, trigger: 'blur', message: '请填写数字',}
           ]
         }
       }
@@ -99,6 +129,9 @@
                 this.dataForm.classHour = data.projectTrainProgram.classHour
                 this.dataForm.classDate = data.projectTrainProgram.classDate
                 this.dataForm.classAddress = data.projectTrainProgram.classAddress
+                this.dataForm.studentNum = data.projectTrainProgram.studentNum
+                this.dataForm.startSection = data.projectTrainProgram.startSection
+                this.dataForm.endSection = data.projectTrainProgram.endSection
               }
             })
           }
@@ -119,6 +152,9 @@
                 'teacherName': this.dataForm.teacherName,
                 'classHour': this.dataForm.classHour,
                 'classAddress': this.dataForm.classAddress,
+                'studentNum': this.dataForm.studentNum,
+                'startSection': this.dataForm.startSection,
+                'endSection': this.dataForm.endSection,
                 'classDate': moment(this.dataForm.classDate).format('YYYYMMDD')
               })
             }).then(({data}) => {

@@ -3,7 +3,12 @@
     <div class="site-content__wrapper">
       <div class="site-content">
         <div class="brand-info">
-          <h2 class="brand-info__text">安徽商贸职业技术学院职业技能管理系统</h2>
+          <h2 class="brand-info__text">安徽商贸职业技术学院</h2>
+          <h2 class="brand-info__text">1+X证书（职业技能鉴定）管理系统</h2>
+          <p class="brand-info__intro"></p>
+        </div>
+        <div class="brand-info">
+
           <p class="brand-info__intro"></p>
         </div>
         <div class="login-main">

@@ -64,6 +64,24 @@
             align="center"
             label="上课地点">
           </el-table-column>
+          <el-table-column
+            prop="studentNum"
+            header-align="center"
+            align="center"
+            label="学生人数">
+          </el-table-column>
+          <el-table-column
+            prop="startSection"
+            header-align="center"
+            align="center"
+            label="开始节次">
+          </el-table-column>
+          <el-table-column
+            prop="endSection"
+            header-align="center"
+            align="center"
+            label="结束节次">
+          </el-table-column>
         </el-table>
         <el-pagination
           @size-change="sizeChangeHandle"

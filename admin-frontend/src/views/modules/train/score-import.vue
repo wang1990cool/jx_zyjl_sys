@@ -9,7 +9,7 @@
       :auto-upload="false"
       :file-list="fileList"
       :on-success="handleSuccess"
-      limit=1
+      limit="1"
     >
       <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
       <div class="el-upload__tip" slot="tip">请先下载模板，按照模板字段进行填写！</div>
@@ -86,8 +86,6 @@
           this.$message.error('文件格式错误')
           return false
         }
-
-
       },
 
       getList () {

@@ -10,6 +10,7 @@ import io.admin.modules.train.entity.TrainProjectTrainProgramEntity;
 import io.admin.modules.train.entity.TrainScoreEntity;
 import io.admin.modules.train.service.TrainProjectService;
 import io.admin.modules.train.service.TrainProjectTrainProgramService;
+import io.swagger.models.auth.In;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -168,12 +169,19 @@ public class TrainProjectTrainProgramController {
                 String classHour = row.getCell(2).getStringCellValue();
                 String classDate = row.getCell(3).getStringCellValue();
                 String classAddress = row.getCell(4).getStringCellValue();
+                String studentNum = row.getCell(5).getStringCellValue();
+                String startSection = row.getCell(6).getStringCellValue();
+                String endSection = row.getCell(7).getStringCellValue();
+
 
                 t.setTeacherId(teacherId);
                 t.setTeacherName(teacherName);
                 t.setClassHour(Integer.parseInt(classHour));
                 t.setClassDate(classDate);
                 t.setClassAddress(classAddress);
+                t.setStudentNum(Integer.parseInt(studentNum));
+                t.setStartSection(Integer.parseInt(startSection));
+                t.setEndSection(Integer.parseInt(endSection));
 
                 trainProjectTrainProgramService.insert(t);
             }

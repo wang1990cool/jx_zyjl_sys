@@ -19,9 +19,6 @@ import java.util.Date;
 public class TrainProjectTrainProgramEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * 
-	 */
 	@TableId
 	private Long id;
 	/**
@@ -44,6 +41,12 @@ public class TrainProjectTrainProgramEntity implements Serializable {
 	private String classDate;
 
 	private String classAddress;
+
+	private Integer studentNum;
+
+	private Integer startSection;
+
+	private Integer endSection;
 
 
 }
