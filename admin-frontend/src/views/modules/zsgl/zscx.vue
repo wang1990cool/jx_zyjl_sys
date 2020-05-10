@@ -38,8 +38,10 @@
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
         <el-button @click="exportDataList()">导出</el-button>
+<!--
         <el-button v-if="isAuth('zsgl:zscx:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
         <el-button v-if="isAuth('zsgl:zscx:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+-->
       </el-form-item>
     </el-form>
     <el-table
